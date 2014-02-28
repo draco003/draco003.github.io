@@ -9,7 +9,7 @@
   <meta name="author" content="Draco">
 
   
-  <meta name="description" content="I&rsquo;d like to give a simple introduction on using FTDI chips in bitbang mode based on this post on Hack a Day. For the hardware we will be using &hellip;">
+  <meta name="description" content="FreeBSD includes software from the OpenSSL project. A flaw in the OpenSSL handling of OCSP response verification could be exploited,to cause a denial &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,444 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2013/04/06/openssl-multiple-vulnerabilities/">OpenSSL Multiple Vulnerabilities</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-06T20:00:56+02:00" pubdate data-updated="true">Apr 6<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/04/06/openssl-multiple-vulnerabilities/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/04/06/openssl-multiple-vulnerabilities/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>FreeBSD includes software from the OpenSSL project. A flaw in the OpenSSL handling of OCSP response verification could be exploited,to cause a denial of service attack.</p>
+
+<p>The original topic from Security Advisory can be checked <a href="http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc" title="Security Advisory Link">here</a>.</p>
+
+<p>It explains the problem and how to fix the source code of your current installation.</p>
+
+<p>I used the second solution which is &ldquo;To update your vulnerable system via a source code patch:&rdquo;
+a) Download the relevant patch from the location below, and verify the
+detached PGP signature using your PGP utility.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>FreeBSD 8.3 and 9.0<span class="o">]</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl.patch</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl.patch.asc</span>
+</span><span class='line'><span class="c"># gpg --verify openssl.patch.asc</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>FreeBSD 9.1<span class="o">]</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch.asc</span>
+</span><span class='line'><span class="c"># gpg --verify openssl-9.1.patch.asc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I&rsquo;m using <code>RELEASE-9.0</code> at the time of this writing, so I used the first method.</p>
+
+<p>If you don&rsquo;t have <code>PGP</code> installed yet, you will have to get <code>GNUPG</code> using the following commands,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portmaster security/gnupg</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>not using portmaster?<span class="o">]</span>
+</span><span class='line'><span class="c"># cd /usr/ports/security/gnupg</span>
+</span><span class='line'><span class="c"># make install clean</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You also need to download the Security Officer PGP Key and import it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fetch http://www.freebsd.org/security/so_public_key.asc</span>
+</span><span class='line'><span class="c"># gpg --import so_public_key.asc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you have the Security Advisor publick key installed, you can go ahead and verify the downloaded patch using the gpg &mdash;verify command,</p>
+
+<p>You made it that far, now apply the patch (in my case it was located in my home directory),
+b) Execute the following commands as root:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src</span>
+</span><span class='line'><span class="c"># patch &lt; /home/draco/openssl.patch</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then <code>buildworld</code> and <code>installworld</code> (for more info consult the <a href="http://www.freebsd.org/handbook/makeworld.html" title="Make Wolrd FreeBSD Handbook">Handbook</a>)</p>
+
+<p>This will take a while, so go pray or read a book  =)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src</span>
+</span><span class='line'><span class="c"># make buildworld</span>
+</span><span class='line'><span class="c"># make installworld</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you need to restart your machine,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># shutdown -r now</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all folks.</p>
+
+<p>P.S Consult the original topic: <a href="http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc">http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/05/area-of-irregular-polygons/">Area of Irregular Polygons</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-05T03:21:51+02:00" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/04/05/area-of-irregular-polygons/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/04/05/area-of-irregular-polygons/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ever wondered how the surface area of an irregular polygon is calculated?</p>
+
+<p>Perhaps you wanted to determine the area enclosed by specific coordinates on a Google Map or <a href="http://www.openstreetmap.org/" title="Open Street Map">OSM</a>?</p>
+
+<p>We are going to write a python script using <a href="https://en.wikipedia.org/wiki/Green%27s_theorem" title="Wikipedia on Green's Theorem">Green&rsquo;s Theorem</a> to calculate the area of an irregular polygon using coordinates of the points.</p>
+
+<p>Green&rsquo;s theorem is used in area surveying to determine the area and centroid of plane figures by integrating over the perimeter. The area can be computed using this formula:</p>
+
+<p><img class="center" src="/downloads/images/green2.gif"></p>
+
+<p>where C is a closed contour or curve that defines the boundary of the region D, and A is the area of the region D.</p>
+
+<p>We will discuss Green&rsquo;s Theorem in a later article, but for now we are focusing on this specific application of Area.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/05/area-of-irregular-polygons/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/04/generate-ssh-keys/">Generate SSH Keys</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-04T06:33:12+02:00" pubdate data-updated="true">Apr 4<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/04/04/generate-ssh-keys/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/04/04/generate-ssh-keys/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>SSH keys enable you to access a remote machine using ssh protocol using your public/private ssh keys combination.</p>
+
+<p>You can choose not to apply a password, and thus access the machine directly, or you can add more security to the keys and apply a password.</p>
+
+<p>The following command generates a pair of ssh authentication keys for your machine</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% ssh-keygen -t rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The default keys will be created under your home directory in the <code>.ssh</code> directory, id_rsa and id_rsa.pub</p>
+
+<p><code>id_rsa</code>: This is your private key, keep it safe and never share it with anyone. It should not be readable by anyone.</p>
+
+<p><code>id_rsa.pub</code>: This is your public key, you share it with the server or service you want to authenticate against.</p>
+
+<p>You will also need to apply the following permissions to the keys and the .ssh directory,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% chmod 700 ~/.ssh
+</span><span class='line'>% chmod 600 ~/.ssh/id_rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To add your keys to a remote server just copy the <code>id_rsa.pub</code> file to that server and add it to the <code>authorized_keys</code> file,</p>
+
+<p>also don&rsquo;t forget to fix the permissions.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>on remote server<span class="o">]</span>
+</span><span class='line'>% cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+</span><span class='line'>% chmod 700 ~/.ssh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&rsquo;s always a good practice to add a password to your keys.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/01/freeplane-incredible-mind-mapping/">Freeplane Incredible Mind Mapping</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-01T03:13:25+02:00" pubdate data-updated="true">Apr 1<span>st</span>, 2013</time>
+        
+           | <a href="/blog/2013/04/01/freeplane-incredible-mind-mapping/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/04/01/freeplane-incredible-mind-mapping/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/downloads/images/Freeplane_logo.png">
+<a href="https://en.wikipedia.org/wiki/Mind_map" title="Mind Map">Mind mapping</a> is something robust, it helps in visualizing what’s in your mind on a piece of paper, you don’t need lots of papers and paragraphs to scroll down to infinity in order to  describe a project or a task that  is made up of multiple sub-tasks, this is where the mind map comes in.</p>
+
+<p>Center your main topic, or project title in the middle of the paper and start branching up every simple detail of the other sub-tasks. However complex it’s made up of simple fragments right?</p>
+
+<p>As a proud Linux user I got my self the <a href="http://freeplane.sourceforge.net/wiki/index.php/Main_Page" title="Freeplane download">Freeplane</a> mind mapping  software, it’s amazing. There are other ones out there but I like this one. it’s simple, robust, can export to multiple formats, and makes the whole process very easy.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/01/freeplane-incredible-mind-mapping/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/31/openssh-server-security/">OpenSSH Server Security</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-31T03:30:01+02:00" pubdate data-updated="true">Mar 31<span>st</span>, 2013</time>
+        
+           | <a href="/blog/2013/03/31/openssh-server-security/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/03/31/openssh-server-security/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers.</p>
+
+<p><code>SSH</code> is typically used to log into a remote machine and execute commands, it also supports tunneling and we can transfer files using the scp protocol.</p>
+
+<p>Change the default port on which SSH listens for incoming connections.</p>
+
+<p>I&rsquo;ll be using port number 22644 for this example, so I&rsquo;ll add the following lines to the <code>/etc/rc.conf</code> file</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sshd_enable="YES"
+</span><span class='line'>sshd_flags="-p 22644"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Disable root user login, and use SSH Protocol 2.</p>
+
+<p>Edit and uncomment (as necessary) the following lines in the <code>/etc/ssh/sshd_config</code> file</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Port 22644
+</span><span class='line'>Protocol 2
+</span><span class='line'>PermitRootLogin no</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we have to restart the OpenSSH server,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/rc.d/sshd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You might also want to activate SSH Public Key login, check this post.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/29/tops-total-open-station/">TOPS: Total Open Station</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-29T03:58:33+02:00" pubdate data-updated="true">Mar 29<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/03/29/tops-total-open-station/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/03/29/tops-total-open-station/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/downloads/images/tops.png">
+<a href="http://tops.iosa.it/" title="TOPS Website">Total Open Station</a> (<strong>TOPS</strong> for friends) is a free software program for downloading and processing data from total station devices.</p>
+
+<p>It&rsquo;s a free software licensed under GNU GPLv3, based on Python and it&rsquo;s a cross-platform solution.</p>
+
+<p>Works on FreeBSD, Linux, and even Windoze.</p>
+
+<p>There is also a wide variety of supported devices: <em>Lecia</em>, <em>Nikon</em>, and <em>Zeiss</em>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/03/29/tops-total-open-station/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2013/03/28/ftdi-bitbang-mode/">FTDI Bitbang Mode</a></h1>
     
     
@@ -112,201 +550,9 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/27/format-disk-to-ms-dos-fat/">Format Disk to MS-DOS FAT</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-27T06:00:45+02:00" pubdate data-updated="true">Mar 27<span>th</span>, 2013</time>
-        
-           | <a href="/blog/2013/03/27/format-disk-to-ms-dos-fat/#disqus_thread"
-             data-disqus-identifier="http://draco003.github.io/blog/2013/03/27/format-disk-to-ms-dos-fat/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Formatting a USB stick or external drive into <code>MS-DOS FAT32</code> file system.</p>
-
-<p>We will be using gpart utility as well as <code>newfs_msdos</code></p>
-
-<p>Follow these steps, run as root.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dd if=/dev/zero of=/dev/da0 bs=1k count=1</span>
-</span><span class='line'><span class="c"># gpart create -s mbr da0</span>
-</span><span class='line'><span class="c"># gpart add -t &quot;\!11&quot; da0</span>
-</span><span class='line'><span class="c"># newfs_msdos -F32 /dev/da0s1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Line 1: We will first clear the partition info using <code>dd</code> command,
-make sure you use the right device name: <code>/dev/da0</code> in my case.</p>
-
-<p>Line 2: Create an <code>MBR</code> (Master Boot Record) on that device.
-Line 3: Add a new mbr partition, we use <code>!11</code> type for mbr (with proper escaping for BASH),</p>
-
-<p>when I used the mbr type <code>gpart</code> didn&rsquo;t recognize it.</p>
-
-<p>Line 4: Constructs a new MS-DOS FAT file system of type 32.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/25/convert-bin-slash-cue-image-to-iso-slash-cdr/">Convert BIN/CUE Image to ISO/CDR</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-25T20:14:17+02:00" pubdate data-updated="true">Mar 25<span>th</span>, 2013</time>
-        
-           | <a href="/blog/2013/03/25/convert-bin-slash-cue-image-to-iso-slash-cdr/#disqus_thread"
-             data-disqus-identifier="http://draco003.github.io/blog/2013/03/25/convert-bin-slash-cue-image-to-iso-slash-cdr/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>If you are familiar with torrents, you might have downloaded a <code>bin/cue</code> cd image before.</p>
-
-<p>The bin/cue CD format is used by some non-Unix cd-writing software, but it&rsquo;s not supported by most other programs. <code>image.bin</code> is the raw cd image, and <code>image.cue</code> is the track index file containing track types and offsets.</p>
-
-<p>On FreeBSD I&rsquo;ll be using the <code>bchunk</code> command. Read more on the man page <code>bchunk(1)</code></p>
-
-<p>You can install bchunk from ports, first update your ports tree and then build it.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portsnap fetch update</span>
-</span><span class='line'><span class="c"># cd /usr/ports/sysutils/bchunk</span>
-</span><span class='line'><span class="c"># make install clean</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then just run bchunk.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># bchunk -v image.bin image.cue basename</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>basename</code> is used for the beginning part of the created track files.</p>
-
-<p>This will create a new iso and cdr files which can be mounted to a <code>vnode</code> memory disk.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/25/mount-iso-file-format/">Mount ISO File Format</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-25T04:03:03+02:00" pubdate data-updated="true">Mar 25<span>th</span>, 2013</time>
-        
-           | <a href="/blog/2013/03/25/mount-iso-file-format/#disqus_thread"
-             data-disqus-identifier="http://draco003.github.io/blog/2013/03/25/mount-iso-file-format/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Sometimes I get files in the <code>iso</code> format, perhaps ripped of a CD or something and I want to use the files without burning it to a CD.</p>
-
-<p>This is the way I do it on FreeBSD.</p>
-
-<p>First open a terminal, then type the following commands,</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># mdconfig -a -t vnode -f path/to/file.iso -u 1</span>
-</span><span class='line'><span class="c"># mount -v -t cd9660 /dev/md1 /media/iso</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Where <code>path/to/file.iso</code> is the real path to your file, and <code>/media/iso</code> is where you mount the iso.</p>
-
-<p>You must be root to run these commands. This basically attaches a <code>vnode</code> type memroy disk from that iso file and creates an md device with the number specified in the <code>-u</code> option.</p>
-
-<p>After that I copy the mounted data else where, and then un mount the vnode memory disk created in the above steps.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># umount /media/iso</span>
-</span><span class='line'><span class="c"># mdconfig -d -u 1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&rsquo;s all folks!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/3/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
