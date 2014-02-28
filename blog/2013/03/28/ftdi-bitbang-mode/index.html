@@ -1,0 +1,534 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>FTDI Bitbang Mode - Draco's Weblog</title>
+  <meta name="author" content="Draco">
+
+  
+  <meta name="description" content="HOWTO FTDI Bitbang mode on FreeBSD using libftdi API">
+  <meta name="keywords" content="freebsd,bitbang,ftdi,ftdi bitbang,libftdi,ftdi libftdi bitbang,serial port">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Draco's Weblog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Draco's Weblog</a></h1>
+  
+    <h2>My Personal Programming & Electronics Journal.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:draco003.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">FTDI Bitbang Mode</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-28T17:43:03+02:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I&rsquo;d like to give a simple introduction on using FTDI chips in bitbang mode based on this post on <a href="http://hackaday.com/2009/09/22/introduction-to-ftdi-bitbang-mode/">Hack a Day</a>.</p>
+
+<p>For the hardware we will be using the <a href="http://www.sparkfun.com/products/718" title="Product Page">&ldquo;Breakout Board for FT232RL USB to Serial&rdquo;</a> from Sparkfun, of course you can use any flavor of FTDI ICs.</p>
+
+<!-- more -->
+
+
+<p>Also we will need to get the libftdi devel/libftdi if you don&rsquo;t have it already.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/ports/devel/libftdi</span>
+</span><span class='line'><span class="c"># make install clean</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The documentation is very helpful when working with <code>libftdi</code> API in C++: <a href="http://www.intra2net.com/en/developer/libftdi/documentation/group__libftdi.html" title="Library Documentation">libftdi docs</a>.</p>
+
+<p>When you connect the <code>FT232R</code> breakout board via USB, you should be able to see your device as a virtual serial port in my case: <code>/dev/cuaU0</code> and it was identified as a ugen1.2 device.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% dmesg | tail
+</span><span class='line'>ugen1.2: &lt; FTDI &gt; at usbus1
+</span><span class='line'>uftdi0: &lt; FT232R USB UART &gt; on usbus1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next let&rsquo;s try the LED blinker example by <a href="http://hackaday.com/author/philburgess/" title="Phil's Profile">Phil</a> at Hack a Day.</p>
+
+<p>I made some changes to the C++ code to be compatible with the latest <code>libftdi 0.20</code></p>
+
+<p>We will need an LED and a 330 Ohm resistor. Connect the Anode of LED (long lead +ve) to CTS pin on FTDI breakout, and the Cathode (short lead -ve) to the resistor, and the other lead of the resistor will be connected to GND.</p>
+
+<p>Put the following code in a file named <code>hello_ftdi.c</code></p>
+
+<figure class='code'><figcaption><span>hello_ftdi.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/* hello_ftdi.c: flash LED connected between CTS and GND.</span>
+</span><span class='line'><span class="cm">This example uses the libftdi API.</span>
+</span><span class='line'><span class="cm">Minimal error checking; written for brevity, not durability. */</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;ftdi.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define LED 0x08 </span><span class="cm">/* CTS */</span><span class="cp"></span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">ftdi_context</span> <span class="n">ftdic</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Initialize context for subsequent function calls */</span>
+</span><span class='line'><span class="n">ftdi_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Open FTDI device based on FT232R vendor &amp; product IDs */</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">ftdi_usb_open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="mh">0x0403</span><span class="p">,</span> <span class="mh">0x6001</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="n">puts</span><span class="p">(</span><span class="s">&quot;Can&#39;t open device&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Enable bitbang mode with a single output line */</span>
+</span><span class='line'><span class="n">ftdi_set_bitmode</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="n">LED</span><span class="p">,</span> <span class="n">BITMODE_BITBANG</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Endless loop: invert LED state, write output, pause 1 second */</span>
+</span><span class='line'><span class="k">for</span><span class="p">(;;)</span> <span class="p">{</span>
+</span><span class='line'><span class="n">c</span> <span class="o">^=</span> <span class="n">LED</span><span class="p">;</span>
+</span><span class='line'><span class="n">ftdi_write_data</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To compile the above code we use the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># gcc -I/usr/local/include/ -L/usr/local/lib/ -o blink hello_ftdi.c -lftdi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will generate an executable named <code>hello</code>, run it</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% ./hello
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You should see the LED blinking on and off with a period of 1 second.</p>
+
+<p>We might need this pin mapping for the FTDI pins in future programming:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">* bitbang I/O pin mappings </span>
+</span><span class='line'><span class="cm">* </span>
+</span><span class='line'><span class="cm">* #define PIN_TXD 0x01</span>
+</span><span class='line'><span class="cm">* #define PIN_RXD 0x02</span>
+</span><span class='line'><span class="cm">* #define PIN_RTS 0x04</span>
+</span><span class='line'><span class="cm">* #define PIN_CTS 0x08</span>
+</span><span class='line'><span class="cm">* #define PIN_DTR 0x10</span>
+</span><span class='line'><span class="cm">* #define PIN_DSR 0x20</span>
+</span><span class='line'><span class="cm">* #define PIN_DCD 0x40</span>
+</span><span class='line'><span class="cm">* #define PIN_RI 0x80</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For now you can have a look on Phil&rsquo;s post on Hack a Day he explains the code pretty well, the code above is modified and works well with libftdi 0.20, also I&rsquo;ll post here the PWM LED chaser code in that other article it&rsquo;s written using D2XX API instead. So I&rsquo;ll post below a modified version to work with libftdi API.</p>
+
+<p>The hardware setup includes 4 LEDs and 4 330 Ohm resistors, I happened to use an LED bar that I had laying around.</p>
+
+<figure class='code'><figcaption><span>pwmchase.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/* pwmchase.c: 8-bit PWM on 4 LEDs using FTDI cable or breakout.</span>
+</span><span class='line'><span class="cm">This example uses the libftdi API.</span>
+</span><span class='line'><span class="cm">Minimal error checking; written for brevity, not durability. */</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;math.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;ftdi.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define LED1 0x08 </span><span class="cm">/* CTS */</span><span class="cp"></span>
+</span><span class='line'><span class="cp">#define LED2 0x01 </span><span class="cm">/* TXD */</span><span class="cp"></span>
+</span><span class='line'><span class="cp">#define LED3 0x02 </span><span class="cm">/* RXD */</span><span class="cp"></span>
+</span><span class='line'><span class="cp">#define LED4 0x14 </span><span class="cm">/* RTS + DTR */</span><span class="cp"></span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">n</span><span class="p">;</span>
+</span><span class='line'><span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="mi">255</span> <span class="o">*</span> <span class="mi">256</span><span class="p">];</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">ftdi_context</span> <span class="n">ftdic</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Generate data for a single PWM &#39;throb&#39; cycle */</span>
+</span><span class='line'><span class="n">memset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">));</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">128</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="cm">/* Apply gamma correction to PWM brightness */</span>
+</span><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">pow</span><span class="p">((</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span> <span class="o">/</span> <span class="mf">127.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span> <span class="o">*</span> <span class="mf">255.0</span><span class="p">);</span>
+</span><span class='line'><span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">255</span><span class="p">],</span> <span class="n">LED1</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* Ramp up */</span>
+</span><span class='line'><span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">[(</span><span class="mi">256</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span><span class="p">],</span> <span class="n">LED1</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* Ramp down */</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Copy data from first LED to others, offset as appropriate */</span>
+</span><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">LED1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="n">data</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span> <span class="p">)</span> <span class="o">%</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span> <span class="o">|=</span> <span class="n">LED2</span><span class="p">;</span>
+</span><span class='line'><span class="n">data</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span> <span class="o">|=</span> <span class="n">LED3</span><span class="p">;</span>
+</span><span class='line'><span class="n">data</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">%</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span> <span class="o">|=</span> <span class="n">LED4</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Initialize context for subsequent function calls */</span>
+</span><span class='line'><span class="n">ftdi_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Open FTDI device based on FT232R vendor &amp; product IDs */</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">ftdi_usb_open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="mh">0x0403</span><span class="p">,</span> <span class="mh">0x6001</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="n">puts</span><span class="p">(</span><span class="s">&quot;Can&#39;t open device&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Initialize, open device, set bitbang mode w/5 outputs */</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ftdi_set_bitmode</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="n">LED1</span> <span class="o">|</span> <span class="n">LED2</span> <span class="o">|</span> <span class="n">LED3</span> <span class="o">|</span> <span class="n">LED4</span><span class="p">,</span> <span class="n">BITMODE_BITBANG</span><span class="p">);</span>
+</span><span class='line'><span class="n">ftdi_set_baudrate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="mi">9600</span><span class="p">);</span> <span class="cm">/* Actually 9600 * 16 */</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Endless loop: dump precomputed PWM data to the device */</span>
+</span><span class='line'><span class="k">for</span><span class="p">(;;)</span> <span class="n">ftdi_write_data</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To compile run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># gcc -I/usr/local/include/ -L/usr/local/lib/ -o pwm pwmchase.c -lftdi -lm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>then to run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% ./pwm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You should now see the 4 LEDs chasing each other with the PWM (Pulse Width Modulation) effect.</p>
+
+<p>I&rsquo;m currently working on connecting a 20x4 LCD display, and will have it show some data. Will keep you posted.</p>
+
+<p>I hope this would be of any help to you, Have fun!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Draco</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-28T17:43:03+02:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ftdi/'>FTDI,</a>, <a class='category' href='/blog/categories/freebsd/'>FreeBSD</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode/" data-via="draco003" data-counturl="http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/27/format-disk-to-ms-dos-fat/" title="Previous Post: Format Disk to MS-DOS FAT">&laquo; Format Disk to MS-DOS FAT</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/03/29/tops-total-open-station/" title="Next Post: TOPS: Total Open Station">TOPS: Total Open Station &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Draco -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'draco003';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode/';
+        var disqus_url = 'http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

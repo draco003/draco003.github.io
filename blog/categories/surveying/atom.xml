@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Surveying | Draco's Weblog]]></title>
+  <link href="http://draco003.github.io/blog/categories/surveying/atom.xml" rel="self"/>
+  <link href="http://draco003.github.io/"/>
+  <updated>2014-02-28T02:23:28+02:00</updated>
+  <id>http://draco003.github.io/</id>
+  <author>
+    <name><![CDATA[Draco]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[TOPS: Total Open Station]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/29/tops-total-open-station/"/>
+    <updated>2013-03-29T03:58:33+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/29/tops-total-open-station</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/downloads/images/tops.png">
+<a href="http://tops.iosa.it/" title="TOPS Website">Total Open Station</a> (<strong>TOPS</strong> for friends) is a free software program for downloading and processing data from total station devices.</p>
+
+<p>It&rsquo;s a free software licensed under GNU GPLv3, based on Python and it&rsquo;s a cross-platform solution.</p>
+
+<p>Works on FreeBSD, Linux, and even Windoze.</p>
+
+<p>There is also a wide variety of supported devices: <em>Lecia</em>, <em>Nikon</em>, and <em>Zeiss</em>.</p>
+
+<!-- more -->
+
+
+<p>It&rsquo;s relatively easy to support new devices by connecting them to the TOPS and collect data dumps from the device. Then file a support ticket in the bug tracker on the TOPS website. If you are good with Python you can edit the code and write a module to work with your model.</p>
+
+<p>Check this page for various ways of installation: <a href="http://tops.iosa.it/installing.html#installing">http://tops.iosa.it/installing.html#installing</a></p>
+
+<p>I installed it on FreeBSD using <code>pip</code>.
+<code>bash
+$ virtualenv tops-environment
+$ source tops-environment/bin/activate
+(tops-environment)[draco@myBox ~/tops]$
+$ pip install totalopenstation
+$ totalopenstation-gui.py
+</code></p>
+
+<p>Line 1: change directory to where you want TOPS installed,</p>
+
+<p>and run the <code>virtualenv</code> command to create a new virtual environment called <code>tops-environment</code>.</p>
+
+<p>Line 2: Execute the <code>activate</code> shell script to activate the virtual environment.</p>
+
+<p>Line 3: You should see something like that line, which indicates the activation of virtualenv.</p>
+
+<p>Line 4: Install TOPS using the pip installer.</p>
+
+<p>Line 5: Run the GUI TOPS program.</p>
+
+<p>The next time you want to run the program, follow these steps:
+open a terminal
+cd to the directory where the virtual environment was created
+<code>source tops-environment/bin/activate</code> to enter the virtualenv
+<code>totalopenstation-gui.py</code> will start the program</p>
+
+<p>This is an amazing piece of software in the opensource world, instead of proprietary software that only works on Windoze and are not Free.</p>
+
+<p>Enjoy Your Surveys!</p>
+]]></content>
+  </entry>
+  
+</feed>

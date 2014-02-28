@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Study Hacks | Draco's Weblog]]></title>
+  <link href="http://draco003.github.io/blog/categories/study-hacks/atom.xml" rel="self"/>
+  <link href="http://draco003.github.io/"/>
+  <updated>2014-02-28T02:23:28+02:00</updated>
+  <id>http://draco003.github.io/</id>
+  <author>
+    <name><![CDATA[Draco]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Freeplane Incredible Mind Mapping]]></title>
+    <link href="http://draco003.github.io/blog/2013/04/01/freeplane-incredible-mind-mapping/"/>
+    <updated>2013-04-01T03:13:25+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/04/01/freeplane-incredible-mind-mapping</id>
+    <content type="html"><![CDATA[<p><img class="right" src="/downloads/images/Freeplane_logo.png">
+<a href="https://en.wikipedia.org/wiki/Mind_map" title="Mind Map">Mind mapping</a> is something robust, it helps in visualizing what’s in your mind on a piece of paper, you don’t need lots of papers and paragraphs to scroll down to infinity in order to  describe a project or a task that  is made up of multiple sub-tasks, this is where the mind map comes in.</p>
+
+<p>Center your main topic, or project title in the middle of the paper and start branching up every simple detail of the other sub-tasks. However complex it’s made up of simple fragments right?</p>
+
+<p>As a proud Linux user I got my self the <a href="http://freeplane.sourceforge.net/wiki/index.php/Main_Page" title="Freeplane download">Freeplane</a> mind mapping  software, it’s amazing. There are other ones out there but I like this one. it’s simple, robust, can export to multiple formats, and makes the whole process very easy.</p>
+
+<!-- more -->
+
+
+<p>Here is a simple example ilustrating the <a href="http://www.padi.com/scuba/" title="PADI">PADI</a> Boat Diver specialty using Freeplane.</p>
+
+<p><a href="/downloads/images/boatdiver1.png"><img class="center" src="/downloads/images/boatdiver1.png"></a></p>
+
+<p>I hope this would make your life easier and Happy Mapping!</p>
+
+<p>Download link: <a href="http://sourceforge.net/projects/freeplane/">http://sourceforge.net/projects/freeplane/</a></p>
+]]></content>
+  </entry>
+  
+</feed>

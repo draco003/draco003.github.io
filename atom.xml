@@ -4,7 +4,7 @@
   <title><![CDATA[Draco's Weblog]]></title>
   <link href="http://draco003.github.io/atom.xml" rel="self"/>
   <link href="http://draco003.github.io/"/>
-  <updated>2014-02-26T23:00:12+02:00</updated>
+  <updated>2014-02-28T02:23:28+02:00</updated>
   <id>http://draco003.github.io/</id>
   <author>
     <name><![CDATA[Draco]]></name>
@@ -12,5 +12,1814 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CodeIgniter Pagination Integrated With Bootstrap]]></title>
+    <link href="http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/"/>
+    <updated>2013-10-07T22:35:24+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap</id>
+    <content type="html"><![CDATA[<p><em>CodeIgniter</em> pagination class is really cool, but I was having a hard time integrating it with the <a href="http://getbootstrap.com/2.3.2/index.html" title="twitter Bootstrap Framework">twitter Bootstrap</a> CSS framework, it was something like an extra dozen config parameters while initializing the pagination library, so I had to modify the CodeIgniter pagination class to be compatible with Bootstrap.</p>
+
+<p>I created a new file under application/libraries/ folder and called it <code>MY_Pagination.php</code></p>
+
+<p>The MY_Pagination.php file is included at the end of this post, feel free to use it in your projects. This version is compatible with Bootstrap version 2.3.2</p>
+
+<p>I included most if not all of the Bootstrap pagination styling into this new library, so all I have to do later on is just initializing the library in the controller like so,</p>
+
+<!-- more -->
+
+
+<p>This example makes use of a demo model called model_m which counts total records using the recordsCount() method, and then gets the pagination records using the getRecords() method. If you have any questions about the usage please consult the documentation for <a href="http://ellislab.com/codeigniter/user-guide/libraries/pagination.html" title="CodeIgniter Pagination Class">CodeIgniter Pagination Class</a>, or just leave a comment below.</p>
+
+<figure class='code'><figcaption><span>demo.php </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$page</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uri</span><span class="o">-&gt;</span><span class="na">segment</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uri</span><span class="o">-&gt;</span><span class="na">segment</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">load</span><span class="o">-&gt;</span><span class="na">model</span><span class="p">(</span><span class="s1">&#39;model_m&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">load</span><span class="o">-&gt;</span><span class="na">library</span><span class="p">(</span><span class="s1">&#39;pagination&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;base_url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">base_url</span><span class="p">(</span><span class="s1">&#39;test_page/p/&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;total_rows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">model_m</span><span class="o">-&gt;</span><span class="na">recordsCount</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;per_page&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;num_links&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;uri_segment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pagination</span><span class="o">-&gt;</span><span class="na">initialize</span><span class="p">(</span><span class="nv">$config</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'><span class="s1">&#39;pagination&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pagination</span><span class="o">-&gt;</span><span class="na">create_links</span><span class="p">(),</span>
+</span><span class='line'><span class="s1">&#39;pagination_data&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">model_m</span><span class="o">-&gt;</span><span class="na">getRecords</span><span class="p">(</span><span class="nv">$page</span><span class="p">,</span> <span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;per_page&#39;</span><span class="p">]),</span>
+</span><span class='line'><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then just echo the pagination into the html of the view file like so,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span> <span class="k">echo</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$pagination</span><span class="p">))</span> <span class="o">?</span> <span class="nv">$pagination</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Below is the MY_Pagination.php file to be placed under <code>application/libraries/</code> folder of the CodeIgniter installation.</p>
+
+<figure class='code'><figcaption><span> (MY_Pagination.php)</span> <a href='http://draco003.github.io/downloads/code/MY_Pagination.php'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+<span class='line-number'>307</span>
+<span class='line-number'>308</span>
+<span class='line-number'>309</span>
+<span class='line-number'>310</span>
+<span class='line-number'>311</span>
+<span class='line-number'>312</span>
+<span class='line-number'>313</span>
+<span class='line-number'>314</span>
+<span class='line-number'>315</span>
+<span class='line-number'>316</span>
+<span class='line-number'>317</span>
+<span class='line-number'>318</span>
+<span class='line-number'>319</span>
+<span class='line-number'>320</span>
+<span class='line-number'>321</span>
+<span class='line-number'>322</span>
+<span class='line-number'>323</span>
+<span class='line-number'>324</span>
+<span class='line-number'>325</span>
+<span class='line-number'>326</span>
+<span class='line-number'>327</span>
+<span class='line-number'>328</span>
+<span class='line-number'>329</span>
+<span class='line-number'>330</span>
+<span class='line-number'>331</span>
+<span class='line-number'>332</span>
+<span class='line-number'>333</span>
+<span class='line-number'>334</span>
+<span class='line-number'>335</span>
+<span class='line-number'>336</span>
+<span class='line-number'>337</span>
+<span class='line-number'>338</span>
+<span class='line-number'>339</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>  <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nb">defined</span><span class="p">(</span><span class="s1">&#39;BASEPATH&#39;</span><span class="p">))</span> <span class="k">exit</span><span class="p">(</span><span class="s1">&#39;No direct script access allowed&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * CodeIgniter</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * An open source application development framework for PHP 5.1.6 or newer</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * @package     CodeIgniter</span>
+</span><span class='line'><span class="sd"> * @author      ExpressionEngine Dev Team</span>
+</span><span class='line'><span class="sd"> * @copyright   Copyright (c) 2008 - 2011, EllisLab, Inc.</span>
+</span><span class='line'><span class="sd"> * @license     http://codeigniter.com/user_guide/license.html</span>
+</span><span class='line'><span class="sd"> * @link        http://codeigniter.com</span>
+</span><span class='line'><span class="sd"> * @since       Version 1.0</span>
+</span><span class='line'><span class="sd"> * @filesource</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ------------------------------------------------------------------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * Pagination Class</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * @package     CodeIgniter</span>
+</span><span class='line'><span class="sd"> * @subpackage  Libraries</span>
+</span><span class='line'><span class="sd"> * @category    Pagination</span>
+</span><span class='line'><span class="sd"> * @author      ExpressionEngine Dev Team</span>
+</span><span class='line'><span class="sd"> * @link        http://codeigniter.com/user_guide/libraries/pagination.html</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * Pagination Class Bootstrap Integration</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * @package     CodeIgniter-Bootstrap</span>
+</span><span class='line'><span class="sd"> * @subpackage  Libraries</span>
+</span><span class='line'><span class="sd"> * @category    Pagination-Bootstrap</span>
+</span><span class='line'><span class="sd"> * @copyright   Copyright (c) 2013, Draco-003.com</span>
+</span><span class='line'><span class="sd"> * @author      draco003</span>
+</span><span class='line'><span class="sd"> * @link        http://draco-003.com/blog/</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MY_Pagination</span> <span class="k">extends</span> <span class="nx">CI_Pagination</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// declare the disabled class open tags from bootstrap</span>
+</span><span class='line'>    <span class="k">var</span> <span class="nv">$prev_tag_open_disabled</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;previous disabled&quot;&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">var</span> <span class="nv">$next_tag_open_disabled</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;next disabled&quot;&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Constructor</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @access  public</span>
+</span><span class='line'><span class="sd">     * @param   array   initialization parameters</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">parent</span><span class="o">::</span><span class="na">__construct</span><span class="p">();</span>
+</span><span class='line'>        <span class="c1">// bootstrap pagination styling</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;full_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;div class=&quot;pagination pagination-centered&quot;&gt;&lt;ul&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;full_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/ul&gt;&lt;/div&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;first_link&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">FALSE</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;last_link&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">FALSE</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;next_link&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Next &amp;rarr;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;next_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;next&quot;&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;next_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;prev_link&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&amp;larr; Previous&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;prev_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;previous&quot;&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;prev_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;cur_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;active&quot;&gt;&lt;span&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;cur_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/span&gt;&lt;/li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;num_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;num_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">// init these vars</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">initialize</span><span class="p">(</span><span class="nv">$config_style</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// --------------------------------------------------------------------</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Generate the pagination links</span>
+</span><span class='line'><span class="sd">     * Add disabled class to inactive next &amp; prev links</span>
+</span><span class='line'><span class="sd">     * Bootstrap style</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @access  public</span>
+</span><span class='line'><span class="sd">     * @return  string</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">create_links</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// If our item count or per-page total is zero there is no need to continue.</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">total_rows</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">OR</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Calculate the total number of pages</span>
+</span><span class='line'>        <span class="nv">$num_pages</span> <span class="o">=</span> <span class="nb">ceil</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">total_rows</span> <span class="o">/</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Is there only one page? Hm... nothing more to do here then.</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$num_pages</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Set the base page index for starting page number</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$base_page</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$base_page</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Determine the current page number.</span>
+</span><span class='line'>        <span class="nv">$CI</span> <span class="o">=&amp;</span> <span class="nx">get_instance</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">config</span><span class="o">-&gt;</span><span class="na">item</span><span class="p">(</span><span class="s1">&#39;enable_query_strings&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="k">TRUE</span> <span class="k">OR</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">page_query_string</span> <span class="o">===</span> <span class="k">TRUE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">query_string_segment</span><span class="p">)</span> <span class="o">!=</span> <span class="nv">$base_page</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">query_string_segment</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1">// Prep the current page - no funny business!</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="p">(</span><span class="nx">int</span><span class="p">)</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">uri</span><span class="o">-&gt;</span><span class="na">segment</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uri_segment</span><span class="p">)</span> <span class="o">!=</span> <span class="nv">$base_page</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">uri</span><span class="o">-&gt;</span><span class="na">segment</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uri_segment</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1">// Prep the current page - no funny business!</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="p">(</span><span class="nx">int</span><span class="p">)</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Set current page to 1 if using page numbers instead of offset</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span> <span class="k">AND</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$base_page</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">=</span> <span class="p">(</span><span class="nx">int</span><span class="p">)</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nx">show_error</span><span class="p">(</span><span class="s1">&#39;Your number of links must be a positive number.&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="p">))</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$base_page</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Is the page number beyond the result range?</span>
+</span><span class='line'>        <span class="c1">// If so we show the last page</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">&gt;</span> <span class="nv">$num_pages</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$num_pages</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">total_rows</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$num_pages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$uri_page_number</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="o">/</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Calculate the start and end numbers. These determine</span>
+</span><span class='line'>        <span class="c1">// which number to start and end the digit links with</span>
+</span><span class='line'>        <span class="nv">$start</span> <span class="o">=</span> <span class="p">((</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">-</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">-</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$end</span>   <span class="o">=</span> <span class="p">((</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">+</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nv">$num_pages</span><span class="p">)</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">+</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">:</span> <span class="nv">$num_pages</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Is pagination being used over GET or POST?  If get, add a per_page query</span>
+</span><span class='line'>        <span class="c1">// string. If post, add a trailing slash to the base URL if needed</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">config</span><span class="o">-&gt;</span><span class="na">item</span><span class="p">(</span><span class="s1">&#39;enable_query_strings&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="k">TRUE</span> <span class="k">OR</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">page_query_string</span> <span class="o">===</span> <span class="k">TRUE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span> <span class="o">=</span> <span class="nb">rtrim</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;&amp;amp;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">query_string_segment</span><span class="o">.</span><span class="s1">&#39;=&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span> <span class="o">=</span> <span class="nb">rtrim</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// And here we go...</span>
+</span><span class='line'>        <span class="nv">$output</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the &quot;First&quot; link</span>
+</span><span class='line'>        <span class="k">if</span>  <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_link</span> <span class="o">!==</span> <span class="k">FALSE</span> <span class="k">AND</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$first_url</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span> <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span><span class="p">;</span>
+</span><span class='line'>            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_tag_open</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="nv">$first_url</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_tag_close</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the &quot;previous&quot; link</span>
+</span><span class='line'>        <span class="c1">// add disabled to class within</span>
+</span><span class='line'>        <span class="c1">//if  ($this-&gt;prev_link !== FALSE AND $this-&gt;cur_page != 1)</span>
+</span><span class='line'>        <span class="k">if</span>  <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_link</span> <span class="o">!==</span> <span class="k">FALSE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// the active</span>
+</span><span class='line'>                <span class="nv">$prev_tag_o</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_tag_open</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$prev_disabled</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">elseif</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// the disabled</span>
+</span><span class='line'>                <span class="nv">$prev_tag_o</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_tag_open_disabled</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$prev_disabled</span> <span class="o">=</span> <span class="k">TRUE</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$uri_page_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$uri_page_number</span> <span class="o">-</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$prev_tag_o</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="p">(</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$prev_disabled</span><span class="p">))</span> <span class="o">?</span> <span class="s1">&#39;#&#39;</span> <span class="o">:</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_tag_close</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prefix</span><span class="o">.</span><span class="nv">$i</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">suffix</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$prev_tag_o</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="p">(</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$prev_disabled</span><span class="p">))</span> <span class="o">?</span> <span class="s1">&#39;#&#39;</span> <span class="o">:</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="o">.</span><span class="nv">$i</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_tag_close</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the pages</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">display_pages</span> <span class="o">!==</span> <span class="k">FALSE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// Write the digit links</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="nv">$loop</span> <span class="o">=</span> <span class="nv">$start</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nv">$loop</span> <span class="o">&lt;=</span> <span class="nv">$end</span><span class="p">;</span> <span class="nv">$loop</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$loop</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="k">else</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nv">$i</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$loop</span> <span class="o">*</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">)</span> <span class="o">-</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">&gt;=</span> <span class="nv">$base_page</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">==</span> <span class="nv">$loop</span><span class="p">)</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_tag_open</span><span class="o">.</span><span class="nv">$loop</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_tag_close</span><span class="p">;</span> <span class="c1">// Current page</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">else</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="nv">$n</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">==</span> <span class="nv">$base_page</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nv">$i</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="nv">$n</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="o">&amp;&amp;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_tag_open</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$loop</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_tag_close</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                        <span class="k">else</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nv">$n</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$n</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prefix</span><span class="o">.</span><span class="nv">$n</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">suffix</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_tag_open</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="o">.</span><span class="nv">$n</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$loop</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_tag_close</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the &quot;next&quot; link</span>
+</span><span class='line'>        <span class="c1">//if ($this-&gt;next_link !== FALSE AND $this-&gt;cur_page &lt; $num_pages)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_link</span> <span class="o">!==</span> <span class="k">FALSE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// the active</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">&lt;</span> <span class="nv">$num_pages</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$next_tag_o</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_tag_open</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$next_disabled</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">elseif</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">==</span> <span class="nv">$num_pages</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// the disabled</span>
+</span><span class='line'>                <span class="nv">$next_tag_o</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_tag_open_disabled</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$next_disabled</span> <span class="o">=</span> <span class="k">TRUE</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">*</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$next_tag_o</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="p">(</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$next_disabled</span><span class="p">))</span><span class="o">?</span> <span class="s1">&#39;#&#39;</span> <span class="o">:</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prefix</span><span class="o">.</span><span class="nv">$i</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">suffix</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_tag_close</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the &quot;Last&quot; link</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_link</span> <span class="o">!==</span> <span class="k">FALSE</span> <span class="k">AND</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">+</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nv">$num_pages</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$num_pages</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="p">((</span><span class="nv">$num_pages</span> <span class="o">*</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">)</span> <span class="o">-</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_tag_open</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prefix</span><span class="o">.</span><span class="nv">$i</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">suffix</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_tag_close</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Kill double slashes.  Note: Sometimes we can end up with a double slash</span>
+</span><span class='line'>        <span class="c1">// in the penultimate link so we&#39;ll kill all double slashes.</span>
+</span><span class='line'>        <span class="nv">$output</span> <span class="o">=</span> <span class="nb">preg_replace</span><span class="p">(</span><span class="s2">&quot;#([^:])//+#&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">1/&quot;</span><span class="p">,</span> <span class="nv">$output</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Add the wrapper HTML if exists</span>
+</span><span class='line'>        <span class="nv">$output</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">full_tag_open</span><span class="o">.</span><span class="nv">$output</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">full_tag_close</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$output</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// END Pagination Class</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* End of file MY_Pagination.php */</span>
+</span><span class='line'><span class="cm">/* Location: ./application/libraries/MY_Pagination.php */</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CodeIgniter Sessions Using PostgreSQL]]></title>
+    <link href="http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql/"/>
+    <updated>2013-09-14T12:17:31+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql</id>
+    <content type="html"><![CDATA[<p>CodeIgniter is one of my favorite PHP MVC frameworks, it gives you the option to scale fast. Having a wide range of database drivers to choose from including postgres is a great option for me. I prefer PostgreSQL over MySQL for large projects where you have to insert 300k+ records daily or more. Of course you have to do some tweaks to your basic configuration of the PostgreSQL server to keep up with big data, but we might discuss this in a future post.</p>
+
+<p>CodeIgniter offers a Sessions library to manage sessions your way instead of sticking to PHP server sessions variable <strong>$_SESSION</strong>. You can read more about it in the CodeIgniter User Guide V2.1.4: <a href="http://ellislab.com/codeigniter/user-guide/libraries/sessions.html" title="Session Class">Session class</a>.</p>
+
+<p>It also gives you an option to save Session data into database, and it provides the database structure for MySQL, unfortunately this will not work with Postgres, so I created a Postgres version</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span>  <span class="n">ci_sessions</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">session_id</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">ip_address</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">user_agent</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">last_activity</span> <span class="nb">bigint</span> <span class="k">DEFAULT</span> <span class="mi">0</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">user_data</span> <span class="nb">text</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">last_activity_idx</span> <span class="k">ON</span> <span class="n">ci_sessions</span><span class="p">(</span><span class="n">last_activity</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Saving the Session data into a database is more secure than cookies, and it gives you more options and functions, for example something like who is online and tracking active sessions.</p>
+
+<p>Thanks, feel free to comment or suggest.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Maxmind GeoIP Using Python API]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/27/maxmind-geoip-using-python-api/"/>
+    <updated>2013-07-27T11:10:48+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/27/maxmind-geoip-using-python-api</id>
+    <content type="html"><![CDATA[<p>GeoIP is a very important addition to projects, moreover keeping the GeoIP databases up-to-date. I&rsquo;ll be using pygeoip python API along with Maxmind binary databases to create a simple python script that returns country name according to the supplied IP address.</p>
+
+<!-- more -->
+
+
+<p>First of all to maintain an up-to-date version of the GeoIP databases from <a href="http://dev.maxmind.com/geoip/legacy/install/country/" title="Maxmind Installation">Maxmind</a>, I wrote the following BASH script (maxmind.sh)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'><span class="nv">GeoIP_DIR</span><span class="o">=</span><span class="s2">&quot;/home/draco/GeoIP&quot;</span>
+</span><span class='line'><span class="nb">echo</span> <span class="k">$(</span>date +%Y%m%d<span class="k">)</span>
+</span><span class='line'>wget -cN --limit-rate<span class="o">=</span>30k -P <span class="nv">$GeoIP_DIR</span>  http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+</span><span class='line'>wget -cN --limit-rate<span class="o">=</span>30k -P <span class="nv">$GeoIP_DIR</span>  http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+</span><span class='line'>wget -cN --limit-rate<span class="o">=</span>30k -P <span class="nv">$GeoIP_DIR</span>  http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+</span><span class='line'>gunzip -k <span class="nv">$GeoIP_DIR</span>/*.gz
+</span><span class='line'>mv -f <span class="nv">$GeoIP_DIR</span>/*.dat /usr/local/share/GeoIP/
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;DONE&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You could omit the GeoLiteCity and GeoIPASNum if not interested. This shell script will check the Maxmind website for a new version of the currently downloaded databases if any, then it extracts it into /usr/local/share/GeoIP/ to be accessed from the python script.</p>
+
+<p>It&rsquo;s propably best to create a crontab job to check updates <a href="http://superuser.com/a/67353" title="SuperUser | Weekyly Cron">every week</a> or even daily, according to your requirements.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>crontab -e
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then add the cronjob, for example to run it every week on Sundays I use the following command,</p>
+
+<p>&mdash;make sure you have created <code>/var/log/GeoIP.log</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>0 0 * * 0 /home/draco/GeoIP/maxmind.sh &gt;&gt; /var/log/GeoIP.log
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now to the python script (geoip.py), which is based on <a href="https://github.com/appliedsec/pygeoip" title="pygeoip on GitHub">pygeoip</a>, it takes one argument &ldquo;IP&rdquo; and returns full version name of country + ISO shortcode.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#coding: utf-8</span>
+</span><span class='line'><span class="c">#!/usr/local/bin/python</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pygeoip</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">gi4</span> <span class="o">=</span> <span class="n">pygeoip</span><span class="o">.</span><span class="n">GeoIP</span><span class="p">(</span><span class="s">&#39;/usr/local/share/GeoIP/GeoIP.dat&#39;</span><span class="p">,</span> <span class="n">pygeoip</span><span class="o">.</span><span class="n">MEMORY_CACHE</span><span class="p">)</span>
+</span><span class='line'><span class="n">ip</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'><span class="n">code</span> <span class="o">=</span> <span class="n">gi4</span><span class="o">.</span><span class="n">country_code_by_addr</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span><span class='line'><span class="n">name</span> <span class="o">=</span> <span class="n">gi4</span><span class="o">.</span><span class="n">country_name_by_addr</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="n">code</span> <span class="o">+</span> <span class="s">&#39; -- &#39;</span> <span class="o">+</span> <span class="n">name</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Usage as follows,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>python geoip.py 98.139.183.24
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s pretty much it.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Convert BIN/TOC Image to BIN/CUE]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/"/>
+    <updated>2013-07-26T07:18:41+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue</id>
+    <content type="html"><![CDATA[<p>So I was ripping a CD using Brasero and the output I got was a binary file along with a TOC file.</p>
+
+<p>I wanted to mount this binary or convert it to ISO, so I came across this utility, toc2cue. which is is part of <em>cdrdao</em> port.</p>
+
+<p>First install cdrdao, a read-write utility for CDs in disc-at-once mode</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portmaster sysutils/cdrdao</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run the following command</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># toc2cue filename.toc filename.cue</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And you would have a cue/bin format which you can convert to ISO later using the procedures in this <a href="http://draco003.github.io" title="BIN/CUE to ISO/CDR Article">article</a>.</p>
+
+<p>Anyway I could have just used dd to create the ISO from a CD located at /dev/sr0 like so</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dd if=/dev/sr0 of=/path/to/file.iso</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But it was nice knowing these utilities in case I came across these formats in the future.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[HTTPS Proxy Test in C]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c/"/>
+    <updated>2013-07-03T21:53:23+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c</id>
+    <content type="html"><![CDATA[<p>I wanted to share my first contribution to Gist. It&rsquo;s an HTTPS proxy tester using cURL library in C.</p>
+
+<p>&mdash; Forked from <a href="https://gist.github.com/mj/5102778" title="Original Gist by mj">mj</a>.</p>
+
+<!-- more -->
+
+
+<script type="text/javascript" src="https://gist.github.com/draco003/5448626.js"></script>
+
+
+<p>To compile under FreeBSD using GCC:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gcc -Wall -L/usr/local/lib/ -I/usr/local/include/ -lcurl https-proxy-test.c -o https-proxy-test
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Usage: <code>https-proxy-test &lt;ip:port&gt;</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./https-proxy-test 123.123.123.123:8080
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[FreeBSD: Build and Install a Custom Kernel]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/"/>
+    <updated>2013-07-02T22:33:00+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel</id>
+    <content type="html"><![CDATA[<p>FreeBSD is a very powerful OS and you can even achieve higher performance by modifying the Kernel and using the modules you need.</p>
+
+<p>Before playing with the kernel you need to have the full FreeBSD source tree installed. The source tree lives in <code>/usr/src</code></p>
+
+<p>If you don&rsquo;t have it then you can get it using subversion <code>svn</code>, follow this guide: <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/svn.html" title="A.5. Using Subversion">Section A.5, “Using Subversion”</a>.</p>
+
+<p>A great resource for building a custom kernel is <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-building.html" title="Building and Installing a Custom Kernel">Chapter 9</a> of the FreeBSD Handbook, it should be your main guide through the process.</p>
+
+<!-- more -->
+
+
+<p>First cd to <code>arch/conf</code>, where arch is the architecture of your machine &mdash; use <code>uname -a</code> to display it, we will assume i386 same as the manual. Afterwards copy the <code>GENERIC</code> configuration file to a new folder under <code>/root/kernels/</code> name it in capital letters (traditions) we will use <code>MYKERNEL</code> here, you could use whatever you prefer. The manual says it&rsquo;s better to name it after the hostname of your machine if you are working with multiple machines.</p>
+
+<p>&mdash; Tip:
+When finished customizing the kernel configuration file, save a backup copy to a location outside of <code>/usr/src</code>. Do not edit <code>GENERIC</code> directly.</p>
+
+<p>Alternately, keep the kernel configuration file elsewhere and create a symbolic link to the file in <code>i386</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src/sys/i386/conf</span>
+</span><span class='line'><span class="c"># mkdir /root/kernels</span>
+</span><span class='line'><span class="c"># cp GENERIC /root/kernels/MYKERNEL</span>
+</span><span class='line'><span class="c"># ln -s /root/kernels/MYKERNEL</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next start editing your new configuration file <code>MYKERNEL</code>. You are advised to check the <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-config.html" title="Kernel Configuration">Handbook</a> section.</p>
+
+<p>One of the first things to edit is the ident argument, change it to your custom kernel name, in our case <code>MYKERNEL</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ident MYKERNEL
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When I first built my custom kernel it was for the purpose of optimizing a server for testing <code>IPFW</code> and other firewall functionality, I also removed all the unnecessary jargon and anything I don&rsquo;t need for the purpose of this server.</p>
+
+<p>You need to spend some time with the configuration file options and the kernel config in the handbook to get a better sense of each configuration.</p>
+
+<p>After you are done, save the file and head over to the next step.</p>
+
+<p>&mdash; <strong>Note</strong>: It is required to have the full FreeBSD source tree installed to build the kernel.
+Now you are ready to compile your new kernel, using <code>buildkernel</code> and specifying your kernel name <code>MYKERNEL</code>.</p>
+
+<p>Next install your new kernel using <code>installkernel</code> command.</p>
+
+<p><em>The above steps are gonna take some hours depending on your hardware config so be prepared, with your favorite book.</em></p>
+
+<p>Please make sure you have a recent backup before installing the new kernel.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src</span>
+</span><span class='line'><span class="c"># make buildkernel KERNCONF=MYKERNEL</span>
+</span><span class='line'><span class="c"># make installkernel KERNCONF=MYKERNEL</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it. Now you just need to restart and experience the power!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reboot</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The new kernel will be copied to <code>/boot/kernel</code> as <code>/boot/kernel/kernel</code> and the old kernel will be moved to <code>/boot/kernel.old/kernel</code>. Now, shutdown the system and reboot into the new kernel. If something goes wrong, refer to the troubleshooting instructions and the section which explains how to recover when the new kernel does not boot.</p>
+
+<p>A great advice by <a href="http://www.rhyous.com/2012/05/09/how-to-build-and-install-a-custom-kernel-on-freebsd/" title="Custom Kernel">Rhyous</a> worth mentioning is to check your disk space before compiling your new kernel.</p>
+
+<p>If you just want to edit one module, in my case I was working on IPFW, you probably don&rsquo;t have to recompile the whole system, in order to compile faster you can edit the /etc/make.conf file</p>
+
+<p>The <code>MODULES_OVERRIDE</code> variable will only build the specified modules instead of building everything.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">MODULES_OVERRIDE</span> <span class="o">=</span> net netinet/ipfw
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>More information is available from the handbook.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[File System Index Node (Inode)]]></title>
+    <link href="http://draco003.github.io/blog/2013/06/30/file-system-index-node-inode/"/>
+    <updated>2013-06-30T05:43:29+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/06/30/file-system-index-node-inode</id>
+    <content type="html"><![CDATA[<p>The inode is a unique identifier in Linux/UNIX filesystems, it&rsquo;s also known as the index number.</p>
+
+<p>Definition on <a href="http://www.cyberciti.biz/tips/understanding-unixlinux-filesystem-inodes.html" title="nixCraft inode article">nixCraft</a>:
+An inode is a data structure on a traditional Unix-style file system such as <code>UFS</code> or <code>ext3</code>. An inode stores basic information about a regular file, directory, or other file system object.</p>
+
+<p>We can display the inode of a specific file name or a list of files in a directory by using the <code>ls</code> command.</p>
+
+<p>Here is a typical output of files inode inside a directory,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls -li
+</span><span class='line'>total 13
+</span><span class='line'>10376896 -rw-r--r--  1 draco  draco   200 Feb 11 19:01 test.c
+</span><span class='line'>10376892 -rw-r--r--  1 draco  draco   480 Feb 11 19:11 test.hex
+</span><span class='line'>10376897 -rw-r--r--  1 draco  draco   181 Feb 11 19:10 <span class="nb">test</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The numbers are the inodes of the respictive files.</p>
+
+<p>One of the most common use of inodes is handling filenames with special characters or unicode like UTF-8, you cannot handle such filenames directly from the terminal, so you need to access it using its inode number.</p>
+
+<p>My answer on StackOverflow to a related problem: <a href="http://stackoverflow.com/a/16216044/1708778">http://stackoverflow.com/a/16216044/1708778</a></p>
+
+<p>&mdash; Further reading: <a href="http://www.onlamp.com/pub/a/bsd/2001/03/07/freebsd_basics.html" title="Understanding Filesystem Inodes">Understanding Filesystem Inodes</a> (<em>BSD DEVCENTER ONLamp.com</em>)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OpenSSL Multiple Vulnerabilities]]></title>
+    <link href="http://draco003.github.io/blog/2013/04/06/openssl-multiple-vulnerabilities/"/>
+    <updated>2013-04-06T20:00:56+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/04/06/openssl-multiple-vulnerabilities</id>
+    <content type="html"><![CDATA[<p>FreeBSD includes software from the OpenSSL project. A flaw in the OpenSSL handling of OCSP response verification could be exploited,to cause a denial of service attack.</p>
+
+<p>The original topic from Security Advisory can be checked <a href="http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc" title="Security Advisory Link">here</a>.</p>
+
+<p>It explains the problem and how to fix the source code of your current installation.</p>
+
+<p>I used the second solution which is &ldquo;To update your vulnerable system via a source code patch:&rdquo;
+a) Download the relevant patch from the location below, and verify the
+detached PGP signature using your PGP utility.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>FreeBSD 8.3 and 9.0<span class="o">]</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl.patch</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl.patch.asc</span>
+</span><span class='line'><span class="c"># gpg --verify openssl.patch.asc</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>FreeBSD 9.1<span class="o">]</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch.asc</span>
+</span><span class='line'><span class="c"># gpg --verify openssl-9.1.patch.asc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I&rsquo;m using <code>RELEASE-9.0</code> at the time of this writing, so I used the first method.</p>
+
+<p>If you don&rsquo;t have <code>PGP</code> installed yet, you will have to get <code>GNUPG</code> using the following commands,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portmaster security/gnupg</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>not using portmaster?<span class="o">]</span>
+</span><span class='line'><span class="c"># cd /usr/ports/security/gnupg</span>
+</span><span class='line'><span class="c"># make install clean</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You also need to download the Security Officer PGP Key and import it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fetch http://www.freebsd.org/security/so_public_key.asc</span>
+</span><span class='line'><span class="c"># gpg --import so_public_key.asc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you have the Security Advisor publick key installed, you can go ahead and verify the downloaded patch using the gpg &mdash;verify command,</p>
+
+<p>You made it that far, now apply the patch (in my case it was located in my home directory),
+b) Execute the following commands as root:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src</span>
+</span><span class='line'><span class="c"># patch &lt; /home/draco/openssl.patch</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then <code>buildworld</code> and <code>installworld</code> (for more info consult the <a href="http://www.freebsd.org/handbook/makeworld.html" title="Make Wolrd FreeBSD Handbook">Handbook</a>)</p>
+
+<p>This will take a while, so go pray or read a book  =)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src</span>
+</span><span class='line'><span class="c"># make buildworld</span>
+</span><span class='line'><span class="c"># make installworld</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you need to restart your machine,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># shutdown -r now</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all folks.</p>
+
+<p>P.S Consult the original topic: <a href="http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc">http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Area of Irregular Polygons]]></title>
+    <link href="http://draco003.github.io/blog/2013/04/05/area-of-irregular-polygons/"/>
+    <updated>2013-04-05T03:21:51+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/04/05/area-of-irregular-polygons</id>
+    <content type="html"><![CDATA[<p>Ever wondered how the surface area of an irregular polygon is calculated?</p>
+
+<p>Perhaps you wanted to determine the area enclosed by specific coordinates on a Google Map or <a href="http://www.openstreetmap.org/" title="Open Street Map">OSM</a>?</p>
+
+<p>We are going to write a python script using <a href="https://en.wikipedia.org/wiki/Green%27s_theorem" title="Wikipedia on Green's Theorem">Green&rsquo;s Theorem</a> to calculate the area of an irregular polygon using coordinates of the points.</p>
+
+<p>Green&rsquo;s theorem is used in area surveying to determine the area and centroid of plane figures by integrating over the perimeter. The area can be computed using this formula:</p>
+
+<p><img class="center" src="http://draco003.github.io/downloads/images/green2.gif"></p>
+
+<p>where C is a closed contour or curve that defines the boundary of the region D, and A is the area of the region D.</p>
+
+<p>We will discuss Green&rsquo;s Theorem in a later article, but for now we are focusing on this specific application of Area.</p>
+
+<!-- more -->
+
+
+<p>This is a python script based on the formula above:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/python -tt</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">x0</span><span class="o">*</span><span class="n">y1</span> <span class="o">-</span> <span class="n">x1</span><span class="o">*</span><span class="n">y0</span>
+</span><span class='line'>                         <span class="k">for</span> <span class="p">((</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">))</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">(</span><span class="n">p</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">segments</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking the code:</p>
+
+<ol>
+<li>Obtain the coordinates of the vertices.</li>
+<li>Create an array of the x and y coordinates of each vertex in a counterclockwise order &ndash; Repeat the first pair at the end of the array (list).</li>
+<li>Multiply the x coordinate of each vertex by the y coordinate of the next vertex, then add the results and call it S1.</li>
+<li>Multiply the y coordinate of each vertex by the x coordinate of the next vertex, then add the results again and call it S2.</li>
+<li>Now Subtract S1 from S2 to get 2A = S2 &ndash; S1.</li>
+<li>Now divide the difference by 2 to get the Area (A).</li>
+</ol>
+
+
+<p>&mdash; <em>Citations</em>:
+How to Calculate the Area of a Polygon: <a href="http://www.wikihow.com/Calculate-the-Area-of-a-Polygon" title="WikiHow Irregular Polygons">WikiHow</a>
+Green&rsquo;s Theorem: <a href="http://mathworld.wolfram.com/GreensTheorem.html" title="Wolfram Green's Theorem">Wolfram</a>
+Python code: <a href="http://stackoverflow.com/a/451482" title="Stack Overflow Area of 2D polygon">Stack Overflow</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Generate SSH Keys]]></title>
+    <link href="http://draco003.github.io/blog/2013/04/04/generate-ssh-keys/"/>
+    <updated>2013-04-04T06:33:12+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/04/04/generate-ssh-keys</id>
+    <content type="html"><![CDATA[<p>SSH keys enable you to access a remote machine using ssh protocol using your public/private ssh keys combination.</p>
+
+<p>You can choose not to apply a password, and thus access the machine directly, or you can add more security to the keys and apply a password.</p>
+
+<p>The following command generates a pair of ssh authentication keys for your machine</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% ssh-keygen -t rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The default keys will be created under your home directory in the <code>.ssh</code> directory, id_rsa and id_rsa.pub</p>
+
+<p><code>id_rsa</code>: This is your private key, keep it safe and never share it with anyone. It should not be readable by anyone.</p>
+
+<p><code>id_rsa.pub</code>: This is your public key, you share it with the server or service you want to authenticate against.</p>
+
+<p>You will also need to apply the following permissions to the keys and the .ssh directory,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% chmod 700 ~/.ssh
+</span><span class='line'>% chmod 600 ~/.ssh/id_rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To add your keys to a remote server just copy the <code>id_rsa.pub</code> file to that server and add it to the <code>authorized_keys</code> file,</p>
+
+<p>also don&rsquo;t forget to fix the permissions.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>on remote server<span class="o">]</span>
+</span><span class='line'>% cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+</span><span class='line'>% chmod 700 ~/.ssh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&rsquo;s always a good practice to add a password to your keys.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Freeplane Incredible Mind Mapping]]></title>
+    <link href="http://draco003.github.io/blog/2013/04/01/freeplane-incredible-mind-mapping/"/>
+    <updated>2013-04-01T03:13:25+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/04/01/freeplane-incredible-mind-mapping</id>
+    <content type="html"><![CDATA[<p><img class="right" src="http://draco003.github.io/downloads/images/Freeplane_logo.png">
+<a href="https://en.wikipedia.org/wiki/Mind_map" title="Mind Map">Mind mapping</a> is something robust, it helps in visualizing what’s in your mind on a piece of paper, you don’t need lots of papers and paragraphs to scroll down to infinity in order to  describe a project or a task that  is made up of multiple sub-tasks, this is where the mind map comes in.</p>
+
+<p>Center your main topic, or project title in the middle of the paper and start branching up every simple detail of the other sub-tasks. However complex it’s made up of simple fragments right?</p>
+
+<p>As a proud Linux user I got my self the <a href="http://freeplane.sourceforge.net/wiki/index.php/Main_Page" title="Freeplane download">Freeplane</a> mind mapping  software, it’s amazing. There are other ones out there but I like this one. it’s simple, robust, can export to multiple formats, and makes the whole process very easy.</p>
+
+<!-- more -->
+
+
+<p>Here is a simple example ilustrating the <a href="http://www.padi.com/scuba/" title="PADI">PADI</a> Boat Diver specialty using Freeplane.</p>
+
+<p><a href="http://draco003.github.io/downloads/images/boatdiver1.png"><img class="center" src="http://draco003.github.io/downloads/images/boatdiver1.png"></a></p>
+
+<p>I hope this would make your life easier and Happy Mapping!</p>
+
+<p>Download link: <a href="http://sourceforge.net/projects/freeplane/">http://sourceforge.net/projects/freeplane/</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OpenSSH Server Security]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/31/openssh-server-security/"/>
+    <updated>2013-03-31T03:30:01+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/31/openssh-server-security</id>
+    <content type="html"><![CDATA[<p>Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers.</p>
+
+<p><code>SSH</code> is typically used to log into a remote machine and execute commands, it also supports tunneling and we can transfer files using the scp protocol.</p>
+
+<p>Change the default port on which SSH listens for incoming connections.</p>
+
+<p>I&rsquo;ll be using port number 22644 for this example, so I&rsquo;ll add the following lines to the <code>/etc/rc.conf</code> file</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sshd_enable="YES"
+</span><span class='line'>sshd_flags="-p 22644"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Disable root user login, and use SSH Protocol 2.</p>
+
+<p>Edit and uncomment (as necessary) the following lines in the <code>/etc/ssh/sshd_config</code> file</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Port 22644
+</span><span class='line'>Protocol 2
+</span><span class='line'>PermitRootLogin no</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we have to restart the OpenSSH server,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/rc.d/sshd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You might also want to activate SSH Public Key login, check this post.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TOPS: Total Open Station]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/29/tops-total-open-station/"/>
+    <updated>2013-03-29T03:58:33+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/29/tops-total-open-station</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://draco003.github.io/downloads/images/tops.png">
+<a href="http://tops.iosa.it/" title="TOPS Website">Total Open Station</a> (<strong>TOPS</strong> for friends) is a free software program for downloading and processing data from total station devices.</p>
+
+<p>It&rsquo;s a free software licensed under GNU GPLv3, based on Python and it&rsquo;s a cross-platform solution.</p>
+
+<p>Works on FreeBSD, Linux, and even Windoze.</p>
+
+<p>There is also a wide variety of supported devices: <em>Lecia</em>, <em>Nikon</em>, and <em>Zeiss</em>.</p>
+
+<!-- more -->
+
+
+<p>It&rsquo;s relatively easy to support new devices by connecting them to the TOPS and collect data dumps from the device. Then file a support ticket in the bug tracker on the TOPS website. If you are good with Python you can edit the code and write a module to work with your model.</p>
+
+<p>Check this page for various ways of installation: <a href="http://tops.iosa.it/installing.html#installing">http://tops.iosa.it/installing.html#installing</a></p>
+
+<p>I installed it on FreeBSD using <code>pip</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>virtualenv tops-environment
+</span><span class='line'><span class="nv">$ </span><span class="nb">source </span>tops-environment/bin/activate
+</span><span class='line'><span class="o">(</span>tops-environment<span class="o">)[</span>draco@myBox ~/tops<span class="o">]</span><span class="nv">$ </span>
+</span><span class='line'><span class="nv">$ </span>pip install totalopenstation
+</span><span class='line'><span class="nv">$ </span>totalopenstation-gui.py
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Line 1: change directory to where you want TOPS installed,</p>
+
+<p>and run the <code>virtualenv</code> command to create a new virtual environment called <code>tops-environment</code>.</p>
+
+<p>Line 2: Execute the <code>activate</code> shell script to activate the virtual environment.</p>
+
+<p>Line 3: You should see something like that line, which indicates the activation of virtualenv.</p>
+
+<p>Line 4: Install TOPS using the pip installer.</p>
+
+<p>Line 5: Run the GUI TOPS program.</p>
+
+<p>The next time you want to run the program, follow these steps:
+open a terminal
+cd to the directory where the virtual environment was created
+<code>source tops-environment/bin/activate</code> to enter the virtualenv
+<code>totalopenstation-gui.py</code> will start the program</p>
+
+<p>This is an amazing piece of software in the opensource world, instead of proprietary software that only works on Windoze and are not Free.</p>
+
+<p>Enjoy Your Surveys!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[FTDI Bitbang Mode]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode/"/>
+    <updated>2013-03-28T17:43:03+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode</id>
+    <content type="html"><![CDATA[<p>I&rsquo;d like to give a simple introduction on using FTDI chips in bitbang mode based on this post on <a href="http://hackaday.com/2009/09/22/introduction-to-ftdi-bitbang-mode/">Hack a Day</a>.</p>
+
+<p>For the hardware we will be using the <a href="http://www.sparkfun.com/products/718" title="Product Page">&ldquo;Breakout Board for FT232RL USB to Serial&rdquo;</a> from Sparkfun, of course you can use any flavor of FTDI ICs.</p>
+
+<!-- more -->
+
+
+<p>Also we will need to get the libftdi devel/libftdi if you don&rsquo;t have it already.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/ports/devel/libftdi</span>
+</span><span class='line'><span class="c"># make install clean</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The documentation is very helpful when working with <code>libftdi</code> API in C++: <a href="http://www.intra2net.com/en/developer/libftdi/documentation/group__libftdi.html" title="Library Documentation">libftdi docs</a>.</p>
+
+<p>When you connect the <code>FT232R</code> breakout board via USB, you should be able to see your device as a virtual serial port in my case: <code>/dev/cuaU0</code> and it was identified as a ugen1.2 device.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% dmesg | tail
+</span><span class='line'>ugen1.2: &lt; FTDI &gt; at usbus1
+</span><span class='line'>uftdi0: &lt; FT232R USB UART &gt; on usbus1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next let&rsquo;s try the LED blinker example by <a href="http://hackaday.com/author/philburgess/" title="Phil's Profile">Phil</a> at Hack a Day.</p>
+
+<p>I made some changes to the C++ code to be compatible with the latest <code>libftdi 0.20</code></p>
+
+<p>We will need an LED and a 330 Ohm resistor. Connect the Anode of LED (long lead +ve) to CTS pin on FTDI breakout, and the Cathode (short lead -ve) to the resistor, and the other lead of the resistor will be connected to GND.</p>
+
+<p>Put the following code in a file named <code>hello_ftdi.c</code></p>
+
+<figure class='code'><figcaption><span>hello_ftdi.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/* hello_ftdi.c: flash LED connected between CTS and GND.</span>
+</span><span class='line'><span class="cm">This example uses the libftdi API.</span>
+</span><span class='line'><span class="cm">Minimal error checking; written for brevity, not durability. */</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;ftdi.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define LED 0x08 </span><span class="cm">/* CTS */</span><span class="cp"></span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">ftdi_context</span> <span class="n">ftdic</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Initialize context for subsequent function calls */</span>
+</span><span class='line'><span class="n">ftdi_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Open FTDI device based on FT232R vendor &amp; product IDs */</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">ftdi_usb_open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="mh">0x0403</span><span class="p">,</span> <span class="mh">0x6001</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="n">puts</span><span class="p">(</span><span class="s">&quot;Can&#39;t open device&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Enable bitbang mode with a single output line */</span>
+</span><span class='line'><span class="n">ftdi_set_bitmode</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="n">LED</span><span class="p">,</span> <span class="n">BITMODE_BITBANG</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Endless loop: invert LED state, write output, pause 1 second */</span>
+</span><span class='line'><span class="k">for</span><span class="p">(;;)</span> <span class="p">{</span>
+</span><span class='line'><span class="n">c</span> <span class="o">^=</span> <span class="n">LED</span><span class="p">;</span>
+</span><span class='line'><span class="n">ftdi_write_data</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To compile the above code we use the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># gcc -I/usr/local/include/ -L/usr/local/lib/ -o blink hello_ftdi.c -lftdi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will generate an executable named <code>hello</code>, run it</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% ./hello
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You should see the LED blinking on and off with a period of 1 second.</p>
+
+<p>We might need this pin mapping for the FTDI pins in future programming:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">* bitbang I/O pin mappings </span>
+</span><span class='line'><span class="cm">* </span>
+</span><span class='line'><span class="cm">* #define PIN_TXD 0x01</span>
+</span><span class='line'><span class="cm">* #define PIN_RXD 0x02</span>
+</span><span class='line'><span class="cm">* #define PIN_RTS 0x04</span>
+</span><span class='line'><span class="cm">* #define PIN_CTS 0x08</span>
+</span><span class='line'><span class="cm">* #define PIN_DTR 0x10</span>
+</span><span class='line'><span class="cm">* #define PIN_DSR 0x20</span>
+</span><span class='line'><span class="cm">* #define PIN_DCD 0x40</span>
+</span><span class='line'><span class="cm">* #define PIN_RI 0x80</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For now you can have a look on Phil&rsquo;s post on Hack a Day he explains the code pretty well, the code above is modified and works well with libftdi 0.20, also I&rsquo;ll post here the PWM LED chaser code in that other article it&rsquo;s written using D2XX API instead. So I&rsquo;ll post below a modified version to work with libftdi API.</p>
+
+<p>The hardware setup includes 4 LEDs and 4 330 Ohm resistors, I happened to use an LED bar that I had laying around.</p>
+
+<figure class='code'><figcaption><span>pwmchase.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/* pwmchase.c: 8-bit PWM on 4 LEDs using FTDI cable or breakout.</span>
+</span><span class='line'><span class="cm">This example uses the libftdi API.</span>
+</span><span class='line'><span class="cm">Minimal error checking; written for brevity, not durability. */</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;math.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;ftdi.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define LED1 0x08 </span><span class="cm">/* CTS */</span><span class="cp"></span>
+</span><span class='line'><span class="cp">#define LED2 0x01 </span><span class="cm">/* TXD */</span><span class="cp"></span>
+</span><span class='line'><span class="cp">#define LED3 0x02 </span><span class="cm">/* RXD */</span><span class="cp"></span>
+</span><span class='line'><span class="cp">#define LED4 0x14 </span><span class="cm">/* RTS + DTR */</span><span class="cp"></span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">n</span><span class="p">;</span>
+</span><span class='line'><span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="mi">255</span> <span class="o">*</span> <span class="mi">256</span><span class="p">];</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">ftdi_context</span> <span class="n">ftdic</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Generate data for a single PWM &#39;throb&#39; cycle */</span>
+</span><span class='line'><span class="n">memset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">));</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">128</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="cm">/* Apply gamma correction to PWM brightness */</span>
+</span><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">pow</span><span class="p">((</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span> <span class="o">/</span> <span class="mf">127.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span> <span class="o">*</span> <span class="mf">255.0</span><span class="p">);</span>
+</span><span class='line'><span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">255</span><span class="p">],</span> <span class="n">LED1</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* Ramp up */</span>
+</span><span class='line'><span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">[(</span><span class="mi">256</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span><span class="p">],</span> <span class="n">LED1</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* Ramp down */</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Copy data from first LED to others, offset as appropriate */</span>
+</span><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">LED1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="n">data</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span> <span class="p">)</span> <span class="o">%</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span> <span class="o">|=</span> <span class="n">LED2</span><span class="p">;</span>
+</span><span class='line'><span class="n">data</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span> <span class="o">|=</span> <span class="n">LED3</span><span class="p">;</span>
+</span><span class='line'><span class="n">data</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">%</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span> <span class="o">|=</span> <span class="n">LED4</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Initialize context for subsequent function calls */</span>
+</span><span class='line'><span class="n">ftdi_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Open FTDI device based on FT232R vendor &amp; product IDs */</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">ftdi_usb_open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="mh">0x0403</span><span class="p">,</span> <span class="mh">0x6001</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="n">puts</span><span class="p">(</span><span class="s">&quot;Can&#39;t open device&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Initialize, open device, set bitbang mode w/5 outputs */</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ftdi_set_bitmode</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="n">LED1</span> <span class="o">|</span> <span class="n">LED2</span> <span class="o">|</span> <span class="n">LED3</span> <span class="o">|</span> <span class="n">LED4</span><span class="p">,</span> <span class="n">BITMODE_BITBANG</span><span class="p">);</span>
+</span><span class='line'><span class="n">ftdi_set_baudrate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="mi">9600</span><span class="p">);</span> <span class="cm">/* Actually 9600 * 16 */</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Endless loop: dump precomputed PWM data to the device */</span>
+</span><span class='line'><span class="k">for</span><span class="p">(;;)</span> <span class="n">ftdi_write_data</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ftdic</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">data</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To compile run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># gcc -I/usr/local/include/ -L/usr/local/lib/ -o pwm pwmchase.c -lftdi -lm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>then to run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% ./pwm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You should now see the 4 LEDs chasing each other with the PWM (Pulse Width Modulation) effect.</p>
+
+<p>I&rsquo;m currently working on connecting a 20x4 LCD display, and will have it show some data. Will keep you posted.</p>
+
+<p>I hope this would be of any help to you, Have fun!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Format Disk to MS-DOS FAT]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/27/format-disk-to-ms-dos-fat/"/>
+    <updated>2013-03-27T06:00:45+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/27/format-disk-to-ms-dos-fat</id>
+    <content type="html"><![CDATA[<p>Formatting a USB stick or external drive into <code>MS-DOS FAT32</code> file system.</p>
+
+<p>We will be using gpart utility as well as <code>newfs_msdos</code></p>
+
+<p>Follow these steps, run as root.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dd if=/dev/zero of=/dev/da0 bs=1k count=1</span>
+</span><span class='line'><span class="c"># gpart create -s mbr da0</span>
+</span><span class='line'><span class="c"># gpart add -t &quot;\!11&quot; da0</span>
+</span><span class='line'><span class="c"># newfs_msdos -F32 /dev/da0s1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Line 1: We will first clear the partition info using <code>dd</code> command,
+make sure you use the right device name: <code>/dev/da0</code> in my case.</p>
+
+<p>Line 2: Create an <code>MBR</code> (Master Boot Record) on that device.
+Line 3: Add a new mbr partition, we use <code>!11</code> type for mbr (with proper escaping for BASH),</p>
+
+<p>when I used the mbr type <code>gpart</code> didn&rsquo;t recognize it.</p>
+
+<p>Line 4: Constructs a new MS-DOS FAT file system of type 32.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Convert BIN/CUE Image to ISO/CDR]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/25/convert-bin-slash-cue-image-to-iso-slash-cdr/"/>
+    <updated>2013-03-25T20:14:17+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/25/convert-bin-slash-cue-image-to-iso-slash-cdr</id>
+    <content type="html"><![CDATA[<p>If you are familiar with torrents, you might have downloaded a <code>bin/cue</code> cd image before.</p>
+
+<p>The bin/cue CD format is used by some non-Unix cd-writing software, but it&rsquo;s not supported by most other programs. <code>image.bin</code> is the raw cd image, and <code>image.cue</code> is the track index file containing track types and offsets.</p>
+
+<p>On FreeBSD I&rsquo;ll be using the <code>bchunk</code> command. Read more on the man page <code>bchunk(1)</code></p>
+
+<p>You can install bchunk from ports, first update your ports tree and then build it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portsnap fetch update</span>
+</span><span class='line'><span class="c"># cd /usr/ports/sysutils/bchunk</span>
+</span><span class='line'><span class="c"># make install clean</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then just run bchunk.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># bchunk -v image.bin image.cue basename</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>basename</code> is used for the beginning part of the created track files.</p>
+
+<p>This will create a new iso and cdr files which can be mounted to a <code>vnode</code> memory disk.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mount ISO File Format]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/25/mount-iso-file-format/"/>
+    <updated>2013-03-25T04:03:03+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/25/mount-iso-file-format</id>
+    <content type="html"><![CDATA[<p>Sometimes I get files in the <code>iso</code> format, perhaps ripped of a CD or something and I want to use the files without burning it to a CD.</p>
+
+<p>This is the way I do it on FreeBSD.</p>
+
+<p>First open a terminal, then type the following commands,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># mdconfig -a -t vnode -f path/to/file.iso -u 1</span>
+</span><span class='line'><span class="c"># mount -v -t cd9660 /dev/md1 /media/iso</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where <code>path/to/file.iso</code> is the real path to your file, and <code>/media/iso</code> is where you mount the iso.</p>
+
+<p>You must be root to run these commands. This basically attaches a <code>vnode</code> type memroy disk from that iso file and creates an md device with the number specified in the <code>-u</code> option.</p>
+
+<p>After that I copy the mounted data else where, and then un mount the vnode memory disk created in the above steps.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># umount /media/iso</span>
+</span><span class='line'><span class="c"># mdconfig -d -u 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all folks!</p>
+]]></content>
+  </entry>
   
 </feed>

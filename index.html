@@ -9,7 +9,7 @@
   <meta name="author" content="Draco">
 
   
-  <meta name="description" content=" Blog Archives Recent Posts ">
+  <meta name="description" content="CodeIgniter pagination class is really cool, but I was having a hard time integrating it with the twitter Bootstrap CSS framework, it was something &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -43,10 +43,8 @@
 </hgroup>
 
 </header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-    <li><a href="blog@draco-003.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
   
 </ul>
   
@@ -58,7 +56,7 @@
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/about">About</a></li>
   <li><a href="/blog/archives">Archives</a></li>
 </ul>
 
@@ -68,7 +66,840 @@
       <div class="blog-index">
   
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-07T22:35:24+02:00" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>CodeIgniter</em> pagination class is really cool, but I was having a hard time integrating it with the <a href="http://getbootstrap.com/2.3.2/index.html" title="twitter Bootstrap Framework">twitter Bootstrap</a> CSS framework, it was something like an extra dozen config parameters while initializing the pagination library, so I had to modify the CodeIgniter pagination class to be compatible with Bootstrap.</p>
+
+<p>I created a new file under application/libraries/ folder and called it <code>MY_Pagination.php</code></p>
+
+<p>The MY_Pagination.php file is included at the end of this post, feel free to use it in your projects. This version is compatible with Bootstrap version 2.3.2</p>
+
+<p>I included most if not all of the Bootstrap pagination styling into this new library, so all I have to do later on is just initializing the library in the controller like so,</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-14T12:17:31+03:00" pubdate data-updated="true">Sep 14<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>CodeIgniter is one of my favorite PHP MVC frameworks, it gives you the option to scale fast. Having a wide range of database drivers to choose from including postgres is a great option for me. I prefer PostgreSQL over MySQL for large projects where you have to insert 300k+ records daily or more. Of course you have to do some tweaks to your basic configuration of the PostgreSQL server to keep up with big data, but we might discuss this in a future post.</p>
+
+<p>CodeIgniter offers a Sessions library to manage sessions your way instead of sticking to PHP server sessions variable <strong>$_SESSION</strong>. You can read more about it in the CodeIgniter User Guide V2.1.4: <a href="http://ellislab.com/codeigniter/user-guide/libraries/sessions.html" title="Session Class">Session class</a>.</p>
+
+<p>It also gives you an option to save Session data into database, and it provides the database structure for MySQL, unfortunately this will not work with Postgres, so I created a Postgres version</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span>  <span class="n">ci_sessions</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">session_id</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">ip_address</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">user_agent</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">last_activity</span> <span class="nb">bigint</span> <span class="k">DEFAULT</span> <span class="mi">0</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">user_data</span> <span class="nb">text</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">last_activity_idx</span> <span class="k">ON</span> <span class="n">ci_sessions</span><span class="p">(</span><span class="n">last_activity</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Saving the Session data into a database is more secure than cookies, and it gives you more options and functions, for example something like who is online and tracking active sessions.</p>
+
+<p>Thanks, feel free to comment or suggest.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-27T11:10:48+03:00" pubdate data-updated="true">Jul 27<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/07/27/maxmind-geoip-using-python-api/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>GeoIP is a very important addition to projects, moreover keeping the GeoIP databases up-to-date. I&rsquo;ll be using pygeoip python API along with Maxmind binary databases to create a simple python script that returns country name according to the supplied IP address.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-26T07:18:41+03:00" pubdate data-updated="true">Jul 26<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So I was ripping a CD using Brasero and the output I got was a binary file along with a TOC file.</p>
+
+<p>I wanted to mount this binary or convert it to ISO, so I came across this utility, toc2cue. which is is part of <em>cdrdao</em> port.</p>
+
+<p>First install cdrdao, a read-write utility for CDs in disc-at-once mode</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portmaster sysutils/cdrdao</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run the following command</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># toc2cue filename.toc filename.cue</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And you would have a cue/bin format which you can convert to ISO later using the procedures in this <a href="http://draco003.github.io" title="BIN/CUE to ISO/CDR Article">article</a>.</p>
+
+<p>Anyway I could have just used dd to create the ISO from a CD located at /dev/sr0 like so</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dd if=/dev/sr0 of=/path/to/file.iso</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But it was nice knowing these utilities in case I came across these formats in the future.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T21:53:23+03:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+        
+           | <a href="/blog/2013/07/03/https-proxy-test-in-c/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I wanted to share my first contribution to Gist. It&rsquo;s an HTTPS proxy tester using cURL library in C.</p>
+
+<p>&mdash; Forked from <a href="https://gist.github.com/mj/5102778" title="Original Gist by mj">mj</a>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/03/https-proxy-test-in-c/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/">FreeBSD: Build and Install a Custom Kernel</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-02T22:33:00+03:00" pubdate data-updated="true">Jul 2<span>nd</span>, 2013</time>
+        
+           | <a href="/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>FreeBSD is a very powerful OS and you can even achieve higher performance by modifying the Kernel and using the modules you need.</p>
+
+<p>Before playing with the kernel you need to have the full FreeBSD source tree installed. The source tree lives in <code>/usr/src</code></p>
+
+<p>If you don&rsquo;t have it then you can get it using subversion <code>svn</code>, follow this guide: <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/svn.html" title="A.5. Using Subversion">Section A.5, “Using Subversion”</a>.</p>
+
+<p>A great resource for building a custom kernel is <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-building.html" title="Building and Installing a Custom Kernel">Chapter 9</a> of the FreeBSD Handbook, it should be your main guide through the process.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/30/file-system-index-node-inode/">File System Index Node (Inode)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-30T05:43:29+03:00" pubdate data-updated="true">Jun 30<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/06/30/file-system-index-node-inode/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/06/30/file-system-index-node-inode/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The inode is a unique identifier in Linux/UNIX filesystems, it&rsquo;s also known as the index number.</p>
+
+<p>Definition on <a href="http://www.cyberciti.biz/tips/understanding-unixlinux-filesystem-inodes.html" title="nixCraft inode article">nixCraft</a>:
+An inode is a data structure on a traditional Unix-style file system such as <code>UFS</code> or <code>ext3</code>. An inode stores basic information about a regular file, directory, or other file system object.</p>
+
+<p>We can display the inode of a specific file name or a list of files in a directory by using the <code>ls</code> command.</p>
+
+<p>Here is a typical output of files inode inside a directory,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls -li
+</span><span class='line'>total 13
+</span><span class='line'>10376896 -rw-r--r--  1 draco  draco   200 Feb 11 19:01 test.c
+</span><span class='line'>10376892 -rw-r--r--  1 draco  draco   480 Feb 11 19:11 test.hex
+</span><span class='line'>10376897 -rw-r--r--  1 draco  draco   181 Feb 11 19:10 <span class="nb">test</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The numbers are the inodes of the respictive files.</p>
+
+<p>One of the most common use of inodes is handling filenames with special characters or unicode like UTF-8, you cannot handle such filenames directly from the terminal, so you need to access it using its inode number.</p>
+
+<p>My answer on StackOverflow to a related problem: <a href="http://stackoverflow.com/a/16216044/1708778">http://stackoverflow.com/a/16216044/1708778</a></p>
+
+<p>&mdash; Further reading: <a href="http://www.onlamp.com/pub/a/bsd/2001/03/07/freebsd_basics.html" title="Understanding Filesystem Inodes">Understanding Filesystem Inodes</a> (<em>BSD DEVCENTER ONLamp.com</em>)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/06/openssl-multiple-vulnerabilities/">OpenSSL Multiple Vulnerabilities</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-06T20:00:56+02:00" pubdate data-updated="true">Apr 6<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/04/06/openssl-multiple-vulnerabilities/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/04/06/openssl-multiple-vulnerabilities/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>FreeBSD includes software from the OpenSSL project. A flaw in the OpenSSL handling of OCSP response verification could be exploited,to cause a denial of service attack.</p>
+
+<p>The original topic from Security Advisory can be checked <a href="http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc" title="Security Advisory Link">here</a>.</p>
+
+<p>It explains the problem and how to fix the source code of your current installation.</p>
+
+<p>I used the second solution which is &ldquo;To update your vulnerable system via a source code patch:&rdquo;
+a) Download the relevant patch from the location below, and verify the
+detached PGP signature using your PGP utility.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>FreeBSD 8.3 and 9.0<span class="o">]</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl.patch</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl.patch.asc</span>
+</span><span class='line'><span class="c"># gpg --verify openssl.patch.asc</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>FreeBSD 9.1<span class="o">]</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch</span>
+</span><span class='line'><span class="c"># fetch http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch.asc</span>
+</span><span class='line'><span class="c"># gpg --verify openssl-9.1.patch.asc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I&rsquo;m using <code>RELEASE-9.0</code> at the time of this writing, so I used the first method.</p>
+
+<p>If you don&rsquo;t have <code>PGP</code> installed yet, you will have to get <code>GNUPG</code> using the following commands,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portmaster security/gnupg</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>not using portmaster?<span class="o">]</span>
+</span><span class='line'><span class="c"># cd /usr/ports/security/gnupg</span>
+</span><span class='line'><span class="c"># make install clean</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You also need to download the Security Officer PGP Key and import it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fetch http://www.freebsd.org/security/so_public_key.asc</span>
+</span><span class='line'><span class="c"># gpg --import so_public_key.asc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you have the Security Advisor publick key installed, you can go ahead and verify the downloaded patch using the gpg &mdash;verify command,</p>
+
+<p>You made it that far, now apply the patch (in my case it was located in my home directory),
+b) Execute the following commands as root:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src</span>
+</span><span class='line'><span class="c"># patch &lt; /home/draco/openssl.patch</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then <code>buildworld</code> and <code>installworld</code> (for more info consult the <a href="http://www.freebsd.org/handbook/makeworld.html" title="Make Wolrd FreeBSD Handbook">Handbook</a>)</p>
+
+<p>This will take a while, so go pray or read a book  =)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src</span>
+</span><span class='line'><span class="c"># make buildworld</span>
+</span><span class='line'><span class="c"># make installworld</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you need to restart your machine,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># shutdown -r now</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all folks.</p>
+
+<p>P.S Consult the original topic: <a href="http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc">http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/05/area-of-irregular-polygons/">Area of Irregular Polygons</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-05T03:21:51+02:00" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/04/05/area-of-irregular-polygons/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/04/05/area-of-irregular-polygons/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ever wondered how the surface area of an irregular polygon is calculated?</p>
+
+<p>Perhaps you wanted to determine the area enclosed by specific coordinates on a Google Map or <a href="http://www.openstreetmap.org/" title="Open Street Map">OSM</a>?</p>
+
+<p>We are going to write a python script using <a href="https://en.wikipedia.org/wiki/Green%27s_theorem" title="Wikipedia on Green's Theorem">Green&rsquo;s Theorem</a> to calculate the area of an irregular polygon using coordinates of the points.</p>
+
+<p>Green&rsquo;s theorem is used in area surveying to determine the area and centroid of plane figures by integrating over the perimeter. The area can be computed using this formula:</p>
+
+<p><img class="center" src="/downloads/images/green2.gif"></p>
+
+<p>where C is a closed contour or curve that defines the boundary of the region D, and A is the area of the region D.</p>
+
+<p>We will discuss Green&rsquo;s Theorem in a later article, but for now we are focusing on this specific application of Area.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/05/area-of-irregular-polygons/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/04/generate-ssh-keys/">Generate SSH Keys</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-04T06:33:12+02:00" pubdate data-updated="true">Apr 4<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/04/04/generate-ssh-keys/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/04/04/generate-ssh-keys/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>SSH keys enable you to access a remote machine using ssh protocol using your public/private ssh keys combination.</p>
+
+<p>You can choose not to apply a password, and thus access the machine directly, or you can add more security to the keys and apply a password.</p>
+
+<p>The following command generates a pair of ssh authentication keys for your machine</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% ssh-keygen -t rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The default keys will be created under your home directory in the <code>.ssh</code> directory, id_rsa and id_rsa.pub</p>
+
+<p><code>id_rsa</code>: This is your private key, keep it safe and never share it with anyone. It should not be readable by anyone.</p>
+
+<p><code>id_rsa.pub</code>: This is your public key, you share it with the server or service you want to authenticate against.</p>
+
+<p>You will also need to apply the following permissions to the keys and the .ssh directory,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>% chmod 700 ~/.ssh
+</span><span class='line'>% chmod 600 ~/.ssh/id_rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To add your keys to a remote server just copy the <code>id_rsa.pub</code> file to that server and add it to the <code>authorized_keys</code> file,</p>
+
+<p>also don&rsquo;t forget to fix the permissions.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>on remote server<span class="o">]</span>
+</span><span class='line'>% cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+</span><span class='line'>% chmod 700 ~/.ssh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&rsquo;s always a good practice to add a password to your keys.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/01/freeplane-incredible-mind-mapping/">Freeplane Incredible Mind Mapping</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-01T03:13:25+02:00" pubdate data-updated="true">Apr 1<span>st</span>, 2013</time>
+        
+           | <a href="/blog/2013/04/01/freeplane-incredible-mind-mapping/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/04/01/freeplane-incredible-mind-mapping/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="right" src="/downloads/images/Freeplane_logo.png">
+<a href="https://en.wikipedia.org/wiki/Mind_map" title="Mind Map">Mind mapping</a> is something robust, it helps in visualizing what’s in your mind on a piece of paper, you don’t need lots of papers and paragraphs to scroll down to infinity in order to  describe a project or a task that  is made up of multiple sub-tasks, this is where the mind map comes in.</p>
+
+<p>Center your main topic, or project title in the middle of the paper and start branching up every simple detail of the other sub-tasks. However complex it’s made up of simple fragments right?</p>
+
+<p>As a proud Linux user I got my self the <a href="http://freeplane.sourceforge.net/wiki/index.php/Main_Page" title="Freeplane download">Freeplane</a> mind mapping  software, it’s amazing. There are other ones out there but I like this one. it’s simple, robust, can export to multiple formats, and makes the whole process very easy.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/01/freeplane-incredible-mind-mapping/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/31/openssh-server-security/">OpenSSH Server Security</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-31T03:30:01+02:00" pubdate data-updated="true">Mar 31<span>st</span>, 2013</time>
+        
+           | <a href="/blog/2013/03/31/openssh-server-security/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/03/31/openssh-server-security/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers.</p>
+
+<p><code>SSH</code> is typically used to log into a remote machine and execute commands, it also supports tunneling and we can transfer files using the scp protocol.</p>
+
+<p>Change the default port on which SSH listens for incoming connections.</p>
+
+<p>I&rsquo;ll be using port number 22644 for this example, so I&rsquo;ll add the following lines to the <code>/etc/rc.conf</code> file</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sshd_enable="YES"
+</span><span class='line'>sshd_flags="-p 22644"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Disable root user login, and use SSH Protocol 2.</p>
+
+<p>Edit and uncomment (as necessary) the following lines in the <code>/etc/ssh/sshd_config</code> file</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Port 22644
+</span><span class='line'>Protocol 2
+</span><span class='line'>PermitRootLogin no</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we have to restart the OpenSSH server,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/rc.d/sshd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You might also want to activate SSH Public Key login, check this post.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/29/tops-total-open-station/">TOPS: Total Open Station</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-29T03:58:33+02:00" pubdate data-updated="true">Mar 29<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/03/29/tops-total-open-station/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/03/29/tops-total-open-station/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/downloads/images/tops.png">
+<a href="http://tops.iosa.it/" title="TOPS Website">Total Open Station</a> (<strong>TOPS</strong> for friends) is a free software program for downloading and processing data from total station devices.</p>
+
+<p>It&rsquo;s a free software licensed under GNU GPLv3, based on Python and it&rsquo;s a cross-platform solution.</p>
+
+<p>Works on FreeBSD, Linux, and even Windoze.</p>
+
+<p>There is also a wide variety of supported devices: <em>Lecia</em>, <em>Nikon</em>, and <em>Zeiss</em>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/03/29/tops-total-open-station/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -79,6 +910,26 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a>
+      </li>
     
   </ul>
 </section>
