@@ -4,7 +4,7 @@
   <title><![CDATA[Category: CodeIgniter | Draco's Weblog]]></title>
   <link href="http://draco003.github.io/blog/categories/codeigniter/atom.xml" rel="self"/>
   <link href="http://draco003.github.io/"/>
-  <updated>2014-02-28T02:55:01+02:00</updated>
+  <updated>2014-02-28T03:21:42+02:00</updated>
   <id>http://draco003.github.io/</id>
   <author>
     <name><![CDATA[Draco]]></name>
@@ -20,7 +20,7 @@
     <id>http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap</id>
     <content type="html"><![CDATA[<p><em>CodeIgniter</em> pagination class is really cool, but I was having a hard time integrating it with the <a href="http://getbootstrap.com/2.3.2/index.html" title="twitter Bootstrap Framework">twitter Bootstrap</a> CSS framework, it was something like an extra dozen config parameters while initializing the pagination library, so I had to modify the CodeIgniter pagination class to be compatible with Bootstrap.</p>
 
-<p>I created a new file under application/libraries/ folder and called it <code>MY_Pagination.php</code></p>
+<p>I created a new file under <code>application/libraries/</code> folder and called it <code>MY_Pagination.php</code></p>
 
 <p>The MY_Pagination.php file is included at the end of this post, feel free to use it in your projects. This version is compatible with Bootstrap version 2.3.2</p>
 
