@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Linux | Draco's Weblog]]></title>
+  <link href="http://draco003.github.io/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://draco003.github.io/"/>
+  <updated>2014-04-25T03:04:02+03:00</updated>
+  <id>http://draco003.github.io/</id>
+  <author>
+    <name><![CDATA[Draco]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Maxmind GeoIP Using Python API]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/27/maxmind-geoip-using-python-api/"/>
+    <updated>2013-07-27T11:10:48+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/27/maxmind-geoip-using-python-api</id>
+    <content type="html"><![CDATA[<p>GeoIP is a very important addition to projects, moreover keeping the GeoIP databases up-to-date. I&rsquo;ll be using pygeoip python API along with Maxmind binary databases to create a simple python script that returns country name according to the supplied IP address.</p>
+
+<!-- more -->
+
+
+<p>First of all to maintain an up-to-date version of the GeoIP databases from <a href="http://dev.maxmind.com/geoip/legacy/install/country/" title="Maxmind Installation">Maxmind</a>, I wrote the following BASH script (maxmind.sh)
+``` bash</p>
+
+<h1>!/bin/sh</h1>
+
+<p>GeoIP_DIR=&ldquo;/home/draco/GeoIP&rdquo;
+echo $(date +%Y%m%d)
+wget -cN &mdash;limit-rate=30k -P $GeoIP_DIR  <a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz">http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz</a>
+wget -cN &mdash;limit-rate=30k -P $GeoIP_DIR  <a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz</a>
+wget -cN &mdash;limit-rate=30k -P $GeoIP_DIR  <a href="http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz">http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz</a>
+gunzip -k $GeoIP_DIR/<em>.gz
+mv -f $GeoIP_DIR/</em>.dat /usr/local/share/GeoIP/
+echo &ldquo;DONE&rdquo;
+```
+You could omit the GeoLiteCity and GeoIPASNum if not interested. This shell script will check the Maxmind website for a new version of the currently downloaded databases if any, then it extracts it into /usr/local/share/GeoIP/ to be accessed from the python script.</p>
+
+<p>It&rsquo;s propably best to create a crontab job to check updates <a href="http://superuser.com/a/67353" title="SuperUser | Weekyly Cron">every week</a> or even daily, according to your requirements.
+<code>bash
+$ crontab -e
+</code>
+Then add the cronjob, for example to run it every week on Sundays I use the following command,</p>
+
+<p>&mdash;make sure you have created <code>/var/log/GeoIP.log</code>
+<code>bash
+0 0 * * 0 /home/draco/GeoIP/maxmind.sh &gt;&gt; /var/log/GeoIP.log
+</code>
+Now to the python script (geoip.py), which is based on <a href="https://github.com/appliedsec/pygeoip" title="pygeoip on GitHub">pygeoip</a>, it takes one argument &ldquo;IP&rdquo; and returns full version name of country + ISO shortcode.
+``` python</p>
+
+<h1>coding: utf-8</h1>
+
+<h1>!/usr/local/bin/python</h1>
+
+<p>import sys
+import pygeoip</p>
+
+<p>gi4 = pygeoip.GeoIP(&lsquo;/usr/local/share/GeoIP/GeoIP.dat&rsquo;, pygeoip.MEMORY_CACHE)
+ip = sys.argv[1]
+code = gi4.country_code_by_addr(ip)
+name = gi4.country_name_by_addr(ip)</p>
+
+<p>print code + &lsquo; &mdash; &rsquo; + name
+<code>
+Usage as follows,
+</code> bash
+$ python geoip.py 98.139.183.24
+```
+That&rsquo;s pretty much it.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[HTTPS Proxy Test in C]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c/"/>
+    <updated>2013-07-03T21:53:23+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c</id>
+    <content type="html"><![CDATA[<p>I wanted to share my first contribution to Gist. It&rsquo;s an HTTPS proxy tester using cURL library in C.</p>
+
+<p>&mdash; Forked from <a href="https://gist.github.com/mj/5102778" title="Original Gist by mj">mj</a>.</p>
+
+<!-- more -->
+
+
+<script type="text/javascript" src="https://gist.github.com/draco003/5448626.js"></script>
+
+
+<p>To compile under FreeBSD using GCC:
+<code>bash
+$ gcc -Wall -L/usr/local/lib/ -I/usr/local/include/ -lcurl https-proxy-test.c -o https-proxy-test
+</code></p>
+
+<p>Usage: <code>https-proxy-test &lt;ip:port&gt;</code>
+<code>bash
+$ ./https-proxy-test 123.123.123.123:8080
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[File System Index Node (Inode)]]></title>
+    <link href="http://draco003.github.io/blog/2013/06/30/file-system-index-node-inode/"/>
+    <updated>2013-06-30T05:43:29+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/06/30/file-system-index-node-inode</id>
+    <content type="html"><![CDATA[<p>The inode is a unique identifier in Linux/UNIX filesystems, it&rsquo;s also known as the index number.</p>
+
+<p>Definition on <a href="http://www.cyberciti.biz/tips/understanding-unixlinux-filesystem-inodes.html" title="nixCraft inode article">nixCraft</a>:
+An inode is a data structure on a traditional Unix-style file system such as <code>UFS</code> or <code>ext3</code>. An inode stores basic information about a regular file, directory, or other file system object.</p>
+
+<p>We can display the inode of a specific file name or a list of files in a directory by using the <code>ls</code> command.</p>
+
+<p>Here is a typical output of files inode inside a directory,
+<code>bash
+$ ls -li
+total 13
+10376896 -rw-r--r--  1 draco  draco   200 Feb 11 19:01 test.c
+10376892 -rw-r--r--  1 draco  draco   480 Feb 11 19:11 test.hex
+10376897 -rw-r--r--  1 draco  draco   181 Feb 11 19:10 test
+</code>
+The numbers are the inodes of the respictive files.</p>
+
+<p>One of the most common use of inodes is handling filenames with special characters or unicode like UTF-8, you cannot handle such filenames directly from the terminal, so you need to access it using its inode number.</p>
+
+<p>My answer on StackOverflow to a related problem: <a href="http://stackoverflow.com/a/16216044/1708778">http://stackoverflow.com/a/16216044/1708778</a></p>
+
+<p>&mdash; Further reading: <a href="http://www.onlamp.com/pub/a/bsd/2001/03/07/freebsd_basics.html" title="Understanding Filesystem Inodes">Understanding Filesystem Inodes</a> (<em>BSD DEVCENTER ONLamp.com</em>)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TOPS: Total Open Station]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/29/tops-total-open-station/"/>
+    <updated>2013-03-29T03:58:33+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/29/tops-total-open-station</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/downloads/images/tops.png">
+<a href="http://tops.iosa.it/" title="TOPS Website">Total Open Station</a> (<strong>TOPS</strong> for friends) is a free software program for downloading and processing data from total station devices.</p>
+
+<p>It&rsquo;s a free software licensed under GNU GPLv3, based on Python and it&rsquo;s a cross-platform solution.</p>
+
+<p>Works on FreeBSD, Linux, and even Windoze.</p>
+
+<p>There is also a wide variety of supported devices: <em>Lecia</em>, <em>Nikon</em>, and <em>Zeiss</em>.</p>
+
+<!-- more -->
+
+
+<p>It&rsquo;s relatively easy to support new devices by connecting them to the TOPS and collect data dumps from the device. Then file a support ticket in the bug tracker on the TOPS website. If you are good with Python you can edit the code and write a module to work with your model.</p>
+
+<p>Check this page for various ways of installation: <a href="http://tops.iosa.it/installing.html#installing">http://tops.iosa.it/installing.html#installing</a></p>
+
+<p>I installed it on FreeBSD using <code>pip</code>.
+<code>bash
+$ virtualenv tops-environment
+$ source tops-environment/bin/activate
+(tops-environment)[draco@myBox ~/tops]$
+$ pip install totalopenstation
+$ totalopenstation-gui.py
+</code></p>
+
+<p>Line 1: change directory to where you want TOPS installed,</p>
+
+<p>and run the <code>virtualenv</code> command to create a new virtual environment called <code>tops-environment</code>.</p>
+
+<p>Line 2: Execute the <code>activate</code> shell script to activate the virtual environment.</p>
+
+<p>Line 3: You should see something like that line, which indicates the activation of virtualenv.</p>
+
+<p>Line 4: Install TOPS using the pip installer.</p>
+
+<p>Line 5: Run the GUI TOPS program.</p>
+
+<p>The next time you want to run the program, follow these steps:
+open a terminal
+cd to the directory where the virtual environment was created
+<code>source tops-environment/bin/activate</code> to enter the virtualenv
+<code>totalopenstation-gui.py</code> will start the program</p>
+
+<p>This is an amazing piece of software in the opensource world, instead of proprietary software that only works on Windoze and are not Free.</p>
+
+<p>Enjoy Your Surveys!</p>
+]]></content>
+  </entry>
+  
+</feed>

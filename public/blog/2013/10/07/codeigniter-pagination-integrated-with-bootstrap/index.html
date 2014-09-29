@@ -1,0 +1,1006 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CodeIgniter Pagination Integrated With Bootstrap - Draco's Weblog</title>
+  <meta name="author" content="Draco">
+
+  
+  <meta name="description" content="CodeIgniter Pagination Integration with twitter Boostrap CSS Framework">
+  <meta name="keywords" content="codeigniter, pagination, css, twitter, bootstrap, codeigniter bootstrap, codeigniter bootstrap pagination, bootstrap pagination codeigniter library">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Draco's Weblog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<meta name="google-site-verification" content="ExsIr3HoKKtTQNsb_pfQyyqNxPIWX3I-dY_PKXyfMNk" />
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Draco's Weblog</a></h1>
+  
+    <h2>My Personal Programming & Electronics Journal.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:draco003.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CodeIgniter Pagination Integrated With Bootstrap</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-07T22:35:24+02:00" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>CodeIgniter</em> pagination class is really cool, but I was having a hard time integrating it with the <a href="http://getbootstrap.com/2.3.2/index.html" title="twitter Bootstrap Framework">twitter Bootstrap</a> CSS framework, it was something like an extra dozen config parameters while initializing the pagination library, so I had to modify the CodeIgniter pagination class to be compatible with Bootstrap.</p>
+
+<p>I created a new file under <code>application/libraries/</code> folder and called it <code>MY_Pagination.php</code></p>
+
+<p>The MY_Pagination.php file is included at the end of this post, feel free to use it in your projects. This version is compatible with Bootstrap version 2.3.2</p>
+
+<p>I included most if not all of the Bootstrap pagination styling into this new library, so all I have to do later on is just initializing the library in the controller like so,</p>
+
+<!-- more -->
+
+
+<p>This example makes use of a demo model called model_m which counts total records using the recordsCount() method, and then gets the pagination records using the getRecords() method. If you have any questions about the usage please consult the documentation for <a href="http://ellislab.com/codeigniter/user-guide/libraries/pagination.html" title="CodeIgniter Pagination Class">CodeIgniter Pagination Class</a>, or just leave a comment below.</p>
+
+<figure class='code'><figcaption><span>demo.php </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$page</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uri</span><span class="o">-&gt;</span><span class="na">segment</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uri</span><span class="o">-&gt;</span><span class="na">segment</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">load</span><span class="o">-&gt;</span><span class="na">model</span><span class="p">(</span><span class="s1">&#39;model_m&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">load</span><span class="o">-&gt;</span><span class="na">library</span><span class="p">(</span><span class="s1">&#39;pagination&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;base_url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">base_url</span><span class="p">(</span><span class="s1">&#39;test_page/p/&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;total_rows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">model_m</span><span class="o">-&gt;</span><span class="na">recordsCount</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;per_page&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;num_links&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;uri_segment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pagination</span><span class="o">-&gt;</span><span class="na">initialize</span><span class="p">(</span><span class="nv">$config</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'><span class="s1">&#39;pagination&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pagination</span><span class="o">-&gt;</span><span class="na">create_links</span><span class="p">(),</span>
+</span><span class='line'><span class="s1">&#39;pagination_data&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">model_m</span><span class="o">-&gt;</span><span class="na">getRecords</span><span class="p">(</span><span class="nv">$page</span><span class="p">,</span> <span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;per_page&#39;</span><span class="p">]),</span>
+</span><span class='line'><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then just echo the pagination into the html of the view file like so,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span> <span class="k">echo</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$pagination</span><span class="p">))</span> <span class="o">?</span> <span class="nv">$pagination</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Below is the MY_Pagination.php file to be placed under <code>application/libraries/</code> folder of the CodeIgniter installation.</p>
+
+<figure class='code'><figcaption><span> (MY_Pagination.php)</span> <a href='/downloads/code/MY_Pagination.php'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+<span class='line-number'>307</span>
+<span class='line-number'>308</span>
+<span class='line-number'>309</span>
+<span class='line-number'>310</span>
+<span class='line-number'>311</span>
+<span class='line-number'>312</span>
+<span class='line-number'>313</span>
+<span class='line-number'>314</span>
+<span class='line-number'>315</span>
+<span class='line-number'>316</span>
+<span class='line-number'>317</span>
+<span class='line-number'>318</span>
+<span class='line-number'>319</span>
+<span class='line-number'>320</span>
+<span class='line-number'>321</span>
+<span class='line-number'>322</span>
+<span class='line-number'>323</span>
+<span class='line-number'>324</span>
+<span class='line-number'>325</span>
+<span class='line-number'>326</span>
+<span class='line-number'>327</span>
+<span class='line-number'>328</span>
+<span class='line-number'>329</span>
+<span class='line-number'>330</span>
+<span class='line-number'>331</span>
+<span class='line-number'>332</span>
+<span class='line-number'>333</span>
+<span class='line-number'>334</span>
+<span class='line-number'>335</span>
+<span class='line-number'>336</span>
+<span class='line-number'>337</span>
+<span class='line-number'>338</span>
+<span class='line-number'>339</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>  <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nb">defined</span><span class="p">(</span><span class="s1">&#39;BASEPATH&#39;</span><span class="p">))</span> <span class="k">exit</span><span class="p">(</span><span class="s1">&#39;No direct script access allowed&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * CodeIgniter</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * An open source application development framework for PHP 5.1.6 or newer</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * @package     CodeIgniter</span>
+</span><span class='line'><span class="sd"> * @author      ExpressionEngine Dev Team</span>
+</span><span class='line'><span class="sd"> * @copyright   Copyright (c) 2008 - 2011, EllisLab, Inc.</span>
+</span><span class='line'><span class="sd"> * @license     http://codeigniter.com/user_guide/license.html</span>
+</span><span class='line'><span class="sd"> * @link        http://codeigniter.com</span>
+</span><span class='line'><span class="sd"> * @since       Version 1.0</span>
+</span><span class='line'><span class="sd"> * @filesource</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ------------------------------------------------------------------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * Pagination Class</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * @package     CodeIgniter</span>
+</span><span class='line'><span class="sd"> * @subpackage  Libraries</span>
+</span><span class='line'><span class="sd"> * @category    Pagination</span>
+</span><span class='line'><span class="sd"> * @author      ExpressionEngine Dev Team</span>
+</span><span class='line'><span class="sd"> * @link        http://codeigniter.com/user_guide/libraries/pagination.html</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * Pagination Class Bootstrap Integration</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * @package     CodeIgniter-Bootstrap</span>
+</span><span class='line'><span class="sd"> * @subpackage  Libraries</span>
+</span><span class='line'><span class="sd"> * @category    Pagination-Bootstrap</span>
+</span><span class='line'><span class="sd"> * @copyright   Copyright (c) 2013, Draco-003.com</span>
+</span><span class='line'><span class="sd"> * @author      draco003</span>
+</span><span class='line'><span class="sd"> * @link        http://draco-003.com/blog/</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MY_Pagination</span> <span class="k">extends</span> <span class="nx">CI_Pagination</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// declare the disabled class open tags from bootstrap</span>
+</span><span class='line'>    <span class="k">var</span> <span class="nv">$prev_tag_open_disabled</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;previous disabled&quot;&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">var</span> <span class="nv">$next_tag_open_disabled</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;next disabled&quot;&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Constructor</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @access  public</span>
+</span><span class='line'><span class="sd">     * @param   array   initialization parameters</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">parent</span><span class="o">::</span><span class="na">__construct</span><span class="p">();</span>
+</span><span class='line'>        <span class="c1">// bootstrap pagination styling</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;full_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;div class=&quot;pagination pagination-centered&quot;&gt;&lt;ul&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;full_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/ul&gt;&lt;/div&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;first_link&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">FALSE</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;last_link&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">FALSE</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;next_link&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Next &amp;rarr;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;next_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;next&quot;&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;next_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;prev_link&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&amp;larr; Previous&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;prev_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;previous&quot;&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;prev_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;cur_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;li class=&quot;active&quot;&gt;&lt;span&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;cur_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/span&gt;&lt;/li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;num_tag_open&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$config_style</span><span class="p">[</span><span class="s1">&#39;num_tag_close&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;/li&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">// init these vars</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">initialize</span><span class="p">(</span><span class="nv">$config_style</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// --------------------------------------------------------------------</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Generate the pagination links</span>
+</span><span class='line'><span class="sd">     * Add disabled class to inactive next &amp; prev links</span>
+</span><span class='line'><span class="sd">     * Bootstrap style</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @access  public</span>
+</span><span class='line'><span class="sd">     * @return  string</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">create_links</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// If our item count or per-page total is zero there is no need to continue.</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">total_rows</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">OR</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Calculate the total number of pages</span>
+</span><span class='line'>        <span class="nv">$num_pages</span> <span class="o">=</span> <span class="nb">ceil</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">total_rows</span> <span class="o">/</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Is there only one page? Hm... nothing more to do here then.</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$num_pages</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Set the base page index for starting page number</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$base_page</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$base_page</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Determine the current page number.</span>
+</span><span class='line'>        <span class="nv">$CI</span> <span class="o">=&amp;</span> <span class="nx">get_instance</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">config</span><span class="o">-&gt;</span><span class="na">item</span><span class="p">(</span><span class="s1">&#39;enable_query_strings&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="k">TRUE</span> <span class="k">OR</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">page_query_string</span> <span class="o">===</span> <span class="k">TRUE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">query_string_segment</span><span class="p">)</span> <span class="o">!=</span> <span class="nv">$base_page</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">query_string_segment</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1">// Prep the current page - no funny business!</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="p">(</span><span class="nx">int</span><span class="p">)</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">uri</span><span class="o">-&gt;</span><span class="na">segment</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uri_segment</span><span class="p">)</span> <span class="o">!=</span> <span class="nv">$base_page</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">uri</span><span class="o">-&gt;</span><span class="na">segment</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uri_segment</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1">// Prep the current page - no funny business!</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="p">(</span><span class="nx">int</span><span class="p">)</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Set current page to 1 if using page numbers instead of offset</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span> <span class="k">AND</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$base_page</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">=</span> <span class="p">(</span><span class="nx">int</span><span class="p">)</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nx">show_error</span><span class="p">(</span><span class="s1">&#39;Your number of links must be a positive number.&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="p">))</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$base_page</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Is the page number beyond the result range?</span>
+</span><span class='line'>        <span class="c1">// If so we show the last page</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">&gt;</span> <span class="nv">$num_pages</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nv">$num_pages</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">total_rows</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$num_pages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$uri_page_number</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span><span class="o">/</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Calculate the start and end numbers. These determine</span>
+</span><span class='line'>        <span class="c1">// which number to start and end the digit links with</span>
+</span><span class='line'>        <span class="nv">$start</span> <span class="o">=</span> <span class="p">((</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">-</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">-</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$end</span>   <span class="o">=</span> <span class="p">((</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">+</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nv">$num_pages</span><span class="p">)</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">+</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">:</span> <span class="nv">$num_pages</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Is pagination being used over GET or POST?  If get, add a per_page query</span>
+</span><span class='line'>        <span class="c1">// string. If post, add a trailing slash to the base URL if needed</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$CI</span><span class="o">-&gt;</span><span class="na">config</span><span class="o">-&gt;</span><span class="na">item</span><span class="p">(</span><span class="s1">&#39;enable_query_strings&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="k">TRUE</span> <span class="k">OR</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">page_query_string</span> <span class="o">===</span> <span class="k">TRUE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span> <span class="o">=</span> <span class="nb">rtrim</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;&amp;amp;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">query_string_segment</span><span class="o">.</span><span class="s1">&#39;=&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span> <span class="o">=</span> <span class="nb">rtrim</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// And here we go...</span>
+</span><span class='line'>        <span class="nv">$output</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the &quot;First&quot; link</span>
+</span><span class='line'>        <span class="k">if</span>  <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_link</span> <span class="o">!==</span> <span class="k">FALSE</span> <span class="k">AND</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$first_url</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span> <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span><span class="p">;</span>
+</span><span class='line'>            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_tag_open</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="nv">$first_url</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_tag_close</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the &quot;previous&quot; link</span>
+</span><span class='line'>        <span class="c1">// add disabled to class within</span>
+</span><span class='line'>        <span class="c1">//if  ($this-&gt;prev_link !== FALSE AND $this-&gt;cur_page != 1)</span>
+</span><span class='line'>        <span class="k">if</span>  <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_link</span> <span class="o">!==</span> <span class="k">FALSE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// the active</span>
+</span><span class='line'>                <span class="nv">$prev_tag_o</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_tag_open</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$prev_disabled</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">elseif</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// the disabled</span>
+</span><span class='line'>                <span class="nv">$prev_tag_o</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_tag_open_disabled</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$prev_disabled</span> <span class="o">=</span> <span class="k">TRUE</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$uri_page_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$uri_page_number</span> <span class="o">-</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$prev_tag_o</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="p">(</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$prev_disabled</span><span class="p">))</span> <span class="o">?</span> <span class="s1">&#39;#&#39;</span> <span class="o">:</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_tag_close</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prefix</span><span class="o">.</span><span class="nv">$i</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">suffix</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$prev_tag_o</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="p">(</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$prev_disabled</span><span class="p">))</span> <span class="o">?</span> <span class="s1">&#39;#&#39;</span> <span class="o">:</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="o">.</span><span class="nv">$i</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prev_tag_close</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the pages</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">display_pages</span> <span class="o">!==</span> <span class="k">FALSE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// Write the digit links</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="nv">$loop</span> <span class="o">=</span> <span class="nv">$start</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nv">$loop</span> <span class="o">&lt;=</span> <span class="nv">$end</span><span class="p">;</span> <span class="nv">$loop</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$loop</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="k">else</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nv">$i</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$loop</span> <span class="o">*</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">)</span> <span class="o">-</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">&gt;=</span> <span class="nv">$base_page</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">==</span> <span class="nv">$loop</span><span class="p">)</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_tag_open</span><span class="o">.</span><span class="nv">$loop</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_tag_close</span><span class="p">;</span> <span class="c1">// Current page</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">else</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="nv">$n</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">==</span> <span class="nv">$base_page</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nv">$i</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="nv">$n</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="o">&amp;&amp;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_tag_open</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_url</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$loop</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_tag_close</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                        <span class="k">else</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nv">$n</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$n</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prefix</span><span class="o">.</span><span class="nv">$n</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">suffix</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_tag_open</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="o">.</span><span class="nv">$n</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$loop</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_tag_close</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the &quot;next&quot; link</span>
+</span><span class='line'>        <span class="c1">//if ($this-&gt;next_link !== FALSE AND $this-&gt;cur_page &lt; $num_pages)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_link</span> <span class="o">!==</span> <span class="k">FALSE</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// the active</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">&lt;</span> <span class="nv">$num_pages</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$next_tag_o</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_tag_open</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$next_disabled</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">elseif</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">==</span> <span class="nv">$num_pages</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// the disabled</span>
+</span><span class='line'>                <span class="nv">$next_tag_o</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_tag_open_disabled</span><span class="p">;</span>
+</span><span class='line'>                <span class="nv">$next_disabled</span> <span class="o">=</span> <span class="k">TRUE</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">*</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$next_tag_o</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="p">(</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$next_disabled</span><span class="p">))</span><span class="o">?</span> <span class="s1">&#39;#&#39;</span> <span class="o">:</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prefix</span><span class="o">.</span><span class="nv">$i</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">suffix</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">next_tag_close</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Render the &quot;Last&quot; link</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_link</span> <span class="o">!==</span> <span class="k">FALSE</span> <span class="k">AND</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cur_page</span> <span class="o">+</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">num_links</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nv">$num_pages</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">use_page_numbers</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="nv">$num_pages</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$i</span> <span class="o">=</span> <span class="p">((</span><span class="nv">$num_pages</span> <span class="o">*</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">)</span> <span class="o">-</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">per_page</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="nv">$output</span> <span class="o">.=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_tag_open</span><span class="o">.</span><span class="s1">&#39;&lt;a &#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">anchor_class</span><span class="o">.</span><span class="s1">&#39;href=&quot;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">base_url</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">prefix</span><span class="o">.</span><span class="nv">$i</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">suffix</span><span class="o">.</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_link</span><span class="o">.</span><span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_tag_close</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Kill double slashes.  Note: Sometimes we can end up with a double slash</span>
+</span><span class='line'>        <span class="c1">// in the penultimate link so we&#39;ll kill all double slashes.</span>
+</span><span class='line'>        <span class="nv">$output</span> <span class="o">=</span> <span class="nb">preg_replace</span><span class="p">(</span><span class="s2">&quot;#([^:])//+#&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">1/&quot;</span><span class="p">,</span> <span class="nv">$output</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Add the wrapper HTML if exists</span>
+</span><span class='line'>        <span class="nv">$output</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">full_tag_open</span><span class="o">.</span><span class="nv">$output</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">full_tag_close</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$output</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// END Pagination Class</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* End of file MY_Pagination.php */</span>
+</span><span class='line'><span class="cm">/* Location: ./application/libraries/MY_Pagination.php */</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Draco</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-07T22:35:24+02:00" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/codeigniter/'>CodeIgniter</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/" data-via="draco003" data-counturl="http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/" title="Previous Post: CodeIgniter Sessions using PostgreSQL">&laquo; CodeIgniter Sessions using PostgreSQL</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/draco003">@draco003</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'draco003',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Draco -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'draco003';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/';
+        var disqus_url = 'http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

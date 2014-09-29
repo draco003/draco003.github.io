@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CodeIgniter Sessions Using PostgreSQL - Draco's Weblog</title>
+  <meta name="author" content="Draco">
+
+  
+  <meta name="description" content="CodeIgniter 2.1.4 Save Session to PostgreSQL database, creating ci_sessions table in PostgreSQL">
+  <meta name="keywords" content="postgres, postgresql, codeigniter, ci_sessions, sql, sessions database, codeigniter sessions postgres, ci_sessions postgresql codeigniter, ci_sessions postgres">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Draco's Weblog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<meta name="google-site-verification" content="ExsIr3HoKKtTQNsb_pfQyyqNxPIWX3I-dY_PKXyfMNk" />
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Draco's Weblog</a></h1>
+  
+    <h2>My Personal Programming & Electronics Journal.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:draco003.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CodeIgniter Sessions Using PostgreSQL</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-14T12:17:31+03:00" pubdate data-updated="true">Sep 14<span>th</span>, 2013</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>CodeIgniter is one of my favorite PHP MVC frameworks, it gives you the option to scale fast. Having a wide range of database drivers to choose from including postgres is a great option for me. I prefer PostgreSQL over MySQL for large projects where you have to insert 300k+ records daily or more. Of course you have to do some tweaks to your basic configuration of the PostgreSQL server to keep up with big data, but we might discuss this in a future post.</p>
+
+<p>CodeIgniter offers a Sessions library to manage sessions your way instead of sticking to PHP server sessions variable <strong>$_SESSION</strong>. You can read more about it in the CodeIgniter User Guide V2.1.4: <a href="http://ellislab.com/codeigniter/user-guide/libraries/sessions.html" title="Session Class">Session class</a>.</p>
+
+<p>It also gives you an option to save Session data into database, and it provides the database structure for MySQL, unfortunately this will not work with Postgres, so I created a Postgres version</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span>  <span class="n">ci_sessions</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">session_id</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">ip_address</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">user_agent</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">last_activity</span> <span class="nb">bigint</span> <span class="k">DEFAULT</span> <span class="mi">0</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">user_data</span> <span class="nb">text</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">last_activity_idx</span> <span class="k">ON</span> <span class="n">ci_sessions</span><span class="p">(</span><span class="n">last_activity</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Saving the Session data into a database is more secure than cookies, and it gives you more options and functions, for example something like who is online and tracking active sessions.</p>
+
+<p>Thanks, feel free to comment or suggest.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Draco</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-14T12:17:31+03:00" pubdate data-updated="true">Sep 14<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/codeigniter/'>CodeIgniter</a>, <a class='category' href='/blog/categories/postgresql/'>PostgreSQL</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql/" data-via="draco003" data-counturl="http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/07/27/maxmind-geoip-using-python-api/" title="Previous Post: Maxmind GeoIP using Python API">&laquo; Maxmind GeoIP using Python API</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/" title="Next Post: CodeIgniter Pagination Integrated with Bootstrap">CodeIgniter Pagination Integrated with Bootstrap &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/draco003">@draco003</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'draco003',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Draco -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'draco003';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql/';
+        var disqus_url = 'http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

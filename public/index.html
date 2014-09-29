@@ -1,0 +1,580 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Draco's Weblog</title>
+  <meta name="author" content="Draco">
+
+  
+  <meta name="description" content="CodeIgniter pagination class is really cool, but I was having a hard time integrating it with the twitter Bootstrap CSS framework, it was something &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://draco003.github.io">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Draco's Weblog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<meta name="google-site-verification" content="ExsIr3HoKKtTQNsb_pfQyyqNxPIWX3I-dY_PKXyfMNk" />
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Draco's Weblog</a></h1>
+  
+    <h2>My Personal Programming & Electronics Journal.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:draco003.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-07T22:35:24+02:00" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>CodeIgniter</em> pagination class is really cool, but I was having a hard time integrating it with the <a href="http://getbootstrap.com/2.3.2/index.html" title="twitter Bootstrap Framework">twitter Bootstrap</a> CSS framework, it was something like an extra dozen config parameters while initializing the pagination library, so I had to modify the CodeIgniter pagination class to be compatible with Bootstrap.</p>
+
+<p>I created a new file under <code>application/libraries/</code> folder and called it <code>MY_Pagination.php</code></p>
+
+<p>The MY_Pagination.php file is included at the end of this post, feel free to use it in your projects. This version is compatible with Bootstrap version 2.3.2</p>
+
+<p>I included most if not all of the Bootstrap pagination styling into this new library, so all I have to do later on is just initializing the library in the controller like so,</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-14T12:17:31+03:00" pubdate data-updated="true">Sep 14<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/09/14/codeigniter-sessions-using-postgresql/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>CodeIgniter is one of my favorite PHP MVC frameworks, it gives you the option to scale fast. Having a wide range of database drivers to choose from including postgres is a great option for me. I prefer PostgreSQL over MySQL for large projects where you have to insert 300k+ records daily or more. Of course you have to do some tweaks to your basic configuration of the PostgreSQL server to keep up with big data, but we might discuss this in a future post.</p>
+
+<p>CodeIgniter offers a Sessions library to manage sessions your way instead of sticking to PHP server sessions variable <strong>$_SESSION</strong>. You can read more about it in the CodeIgniter User Guide V2.1.4: <a href="http://ellislab.com/codeigniter/user-guide/libraries/sessions.html" title="Session Class">Session class</a>.</p>
+
+<p>It also gives you an option to save Session data into database, and it provides the database structure for MySQL, unfortunately this will not work with Postgres, so I created a Postgres version</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span>  <span class="n">ci_sessions</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">session_id</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">ip_address</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">user_agent</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">last_activity</span> <span class="nb">bigint</span> <span class="k">DEFAULT</span> <span class="mi">0</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">user_data</span> <span class="nb">text</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">last_activity_idx</span> <span class="k">ON</span> <span class="n">ci_sessions</span><span class="p">(</span><span class="n">last_activity</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Saving the Session data into a database is more secure than cookies, and it gives you more options and functions, for example something like who is online and tracking active sessions.</p>
+
+<p>Thanks, feel free to comment or suggest.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-27T11:10:48+03:00" pubdate data-updated="true">Jul 27<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/07/27/maxmind-geoip-using-python-api/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>GeoIP is a very important addition to projects, moreover keeping the GeoIP databases up-to-date. I&rsquo;ll be using pygeoip python API along with Maxmind binary databases to create a simple python script that returns country name according to the supplied IP address.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-26T07:18:41+03:00" pubdate data-updated="true">Jul 26<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So I was ripping a CD using Brasero and the output I got was a binary file along with a TOC file.</p>
+
+<p>I wanted to mount this binary or convert it to ISO, so I came across this utility, toc2cue. which is is part of <em>cdrdao</em> port.</p>
+
+<p>First install cdrdao, a read-write utility for CDs in disc-at-once mode</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portmaster sysutils/cdrdao</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run the following command</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># toc2cue filename.toc filename.cue</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And you would have a cue/bin format which you can convert to ISO later using the procedures in this <a href="http://draco003.github.io" title="BIN/CUE to ISO/CDR Article">article</a>.</p>
+
+<p>Anyway I could have just used dd to create the ISO from a CD located at /dev/sr0 like so</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dd if=/dev/sr0 of=/path/to/file.iso</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But it was nice knowing these utilities in case I came across these formats in the future.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T21:53:23+03:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+        
+           | <a href="/blog/2013/07/03/https-proxy-test-in-c/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I wanted to share my first contribution to Gist. It&rsquo;s an HTTPS proxy tester using cURL library in C.</p>
+
+<p>&mdash; Forked from <a href="https://gist.github.com/mj/5102778" title="Original Gist by mj">mj</a>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/03/https-proxy-test-in-c/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/">FreeBSD: Build and Install a Custom Kernel</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-02T22:33:00+03:00" pubdate data-updated="true">Jul 2<span>nd</span>, 2013</time>
+        
+           | <a href="/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>FreeBSD is a very powerful OS and you can even achieve higher performance by modifying the Kernel and using the modules you need.</p>
+
+<p>Before playing with the kernel you need to have the full FreeBSD source tree installed. The source tree lives in <code>/usr/src</code></p>
+
+<p>If you don&rsquo;t have it then you can get it using subversion <code>svn</code>, follow this guide: <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/svn.html" title="A.5. Using Subversion">Section A.5, “Using Subversion”</a>.</p>
+
+<p>A great resource for building a custom kernel is <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-building.html" title="Building and Installing a Custom Kernel">Chapter 9</a> of the FreeBSD Handbook, it should be your main guide through the process.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/30/file-system-index-node-inode/">File System Index Node (Inode)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-30T05:43:29+03:00" pubdate data-updated="true">Jun 30<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/06/30/file-system-index-node-inode/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/06/30/file-system-index-node-inode/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The inode is a unique identifier in Linux/UNIX filesystems, it&rsquo;s also known as the index number.</p>
+
+<p>Definition on <a href="http://www.cyberciti.biz/tips/understanding-unixlinux-filesystem-inodes.html" title="nixCraft inode article">nixCraft</a>:
+An inode is a data structure on a traditional Unix-style file system such as <code>UFS</code> or <code>ext3</code>. An inode stores basic information about a regular file, directory, or other file system object.</p>
+
+<p>We can display the inode of a specific file name or a list of files in a directory by using the <code>ls</code> command.</p>
+
+<p>Here is a typical output of files inode inside a directory,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls -li
+</span><span class='line'>total 13
+</span><span class='line'>10376896 -rw-r--r--  1 draco  draco   200 Feb 11 19:01 test.c
+</span><span class='line'>10376892 -rw-r--r--  1 draco  draco   480 Feb 11 19:11 test.hex
+</span><span class='line'>10376897 -rw-r--r--  1 draco  draco   181 Feb 11 19:10 <span class="nb">test</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The numbers are the inodes of the respictive files.</p>
+
+<p>One of the most common use of inodes is handling filenames with special characters or unicode like UTF-8, you cannot handle such filenames directly from the terminal, so you need to access it using its inode number.</p>
+
+<p>My answer on StackOverflow to a related problem: <a href="http://stackoverflow.com/a/16216044/1708778">http://stackoverflow.com/a/16216044/1708778</a></p>
+
+<p>&mdash; Further reading: <a href="http://www.onlamp.com/pub/a/bsd/2001/03/07/freebsd_basics.html" title="Understanding Filesystem Inodes">Understanding Filesystem Inodes</a> (<em>BSD DEVCENTER ONLamp.com</em>)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/draco003">@draco003</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'draco003',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Draco -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'draco003';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

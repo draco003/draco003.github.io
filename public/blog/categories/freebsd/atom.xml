@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: FreeBSD | Draco's Weblog]]></title>
+  <link href="http://draco003.github.io/blog/categories/freebsd/atom.xml" rel="self"/>
+  <link href="http://draco003.github.io/"/>
+  <updated>2014-04-25T03:04:02+03:00</updated>
+  <id>http://draco003.github.io/</id>
+  <author>
+    <name><![CDATA[Draco]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Maxmind GeoIP Using Python API]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/27/maxmind-geoip-using-python-api/"/>
+    <updated>2013-07-27T11:10:48+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/27/maxmind-geoip-using-python-api</id>
+    <content type="html"><![CDATA[<p>GeoIP is a very important addition to projects, moreover keeping the GeoIP databases up-to-date. I&rsquo;ll be using pygeoip python API along with Maxmind binary databases to create a simple python script that returns country name according to the supplied IP address.</p>
+
+<!-- more -->
+
+
+<p>First of all to maintain an up-to-date version of the GeoIP databases from <a href="http://dev.maxmind.com/geoip/legacy/install/country/" title="Maxmind Installation">Maxmind</a>, I wrote the following BASH script (maxmind.sh)
+``` bash</p>
+
+<h1>!/bin/sh</h1>
+
+<p>GeoIP_DIR=&ldquo;/home/draco/GeoIP&rdquo;
+echo $(date +%Y%m%d)
+wget -cN &mdash;limit-rate=30k -P $GeoIP_DIR  <a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz">http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz</a>
+wget -cN &mdash;limit-rate=30k -P $GeoIP_DIR  <a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz</a>
+wget -cN &mdash;limit-rate=30k -P $GeoIP_DIR  <a href="http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz">http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz</a>
+gunzip -k $GeoIP_DIR/<em>.gz
+mv -f $GeoIP_DIR/</em>.dat /usr/local/share/GeoIP/
+echo &ldquo;DONE&rdquo;
+```
+You could omit the GeoLiteCity and GeoIPASNum if not interested. This shell script will check the Maxmind website for a new version of the currently downloaded databases if any, then it extracts it into /usr/local/share/GeoIP/ to be accessed from the python script.</p>
+
+<p>It&rsquo;s propably best to create a crontab job to check updates <a href="http://superuser.com/a/67353" title="SuperUser | Weekyly Cron">every week</a> or even daily, according to your requirements.
+<code>bash
+$ crontab -e
+</code>
+Then add the cronjob, for example to run it every week on Sundays I use the following command,</p>
+
+<p>&mdash;make sure you have created <code>/var/log/GeoIP.log</code>
+<code>bash
+0 0 * * 0 /home/draco/GeoIP/maxmind.sh &gt;&gt; /var/log/GeoIP.log
+</code>
+Now to the python script (geoip.py), which is based on <a href="https://github.com/appliedsec/pygeoip" title="pygeoip on GitHub">pygeoip</a>, it takes one argument &ldquo;IP&rdquo; and returns full version name of country + ISO shortcode.
+``` python</p>
+
+<h1>coding: utf-8</h1>
+
+<h1>!/usr/local/bin/python</h1>
+
+<p>import sys
+import pygeoip</p>
+
+<p>gi4 = pygeoip.GeoIP(&lsquo;/usr/local/share/GeoIP/GeoIP.dat&rsquo;, pygeoip.MEMORY_CACHE)
+ip = sys.argv[1]
+code = gi4.country_code_by_addr(ip)
+name = gi4.country_name_by_addr(ip)</p>
+
+<p>print code + &lsquo; &mdash; &rsquo; + name
+<code>
+Usage as follows,
+</code> bash
+$ python geoip.py 98.139.183.24
+```
+That&rsquo;s pretty much it.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Convert BIN/TOC Image to BIN/CUE]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/"/>
+    <updated>2013-07-26T07:18:41+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue</id>
+    <content type="html"><![CDATA[<p>So I was ripping a CD using Brasero and the output I got was a binary file along with a TOC file.</p>
+
+<p>I wanted to mount this binary or convert it to ISO, so I came across this utility, toc2cue. which is is part of <em>cdrdao</em> port.</p>
+
+<p>First install cdrdao, a read-write utility for CDs in disc-at-once mode
+``` bash</p>
+
+<h1>portmaster sysutils/cdrdao</h1>
+
+<p><code>
+Then run the following command
+</code> bash</p>
+
+<h1>toc2cue filename.toc filename.cue</h1>
+
+<p>```
+And you would have a cue/bin format which you can convert to ISO later using the procedures in this <a href="http://draco003.github.io" title="BIN/CUE to ISO/CDR Article">article</a>.</p>
+
+<p>Anyway I could have just used dd to create the ISO from a CD located at /dev/sr0 like so
+``` bash</p>
+
+<h1>dd if=/dev/sr0 of=/path/to/file.iso</h1>
+
+<p>```
+But it was nice knowing these utilities in case I came across these formats in the future.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[HTTPS Proxy Test in C]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c/"/>
+    <updated>2013-07-03T21:53:23+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c</id>
+    <content type="html"><![CDATA[<p>I wanted to share my first contribution to Gist. It&rsquo;s an HTTPS proxy tester using cURL library in C.</p>
+
+<p>&mdash; Forked from <a href="https://gist.github.com/mj/5102778" title="Original Gist by mj">mj</a>.</p>
+
+<!-- more -->
+
+
+<script type="text/javascript" src="https://gist.github.com/draco003/5448626.js"></script>
+
+
+<p>To compile under FreeBSD using GCC:
+<code>bash
+$ gcc -Wall -L/usr/local/lib/ -I/usr/local/include/ -lcurl https-proxy-test.c -o https-proxy-test
+</code></p>
+
+<p>Usage: <code>https-proxy-test &lt;ip:port&gt;</code>
+<code>bash
+$ ./https-proxy-test 123.123.123.123:8080
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[FreeBSD: Build and Install a Custom Kernel]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/"/>
+    <updated>2013-07-02T22:33:00+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel</id>
+    <content type="html"><![CDATA[<p>FreeBSD is a very powerful OS and you can even achieve higher performance by modifying the Kernel and using the modules you need.</p>
+
+<p>Before playing with the kernel you need to have the full FreeBSD source tree installed. The source tree lives in <code>/usr/src</code></p>
+
+<p>If you don&rsquo;t have it then you can get it using subversion <code>svn</code>, follow this guide: <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/svn.html" title="A.5. Using Subversion">Section A.5, “Using Subversion”</a>.</p>
+
+<p>A great resource for building a custom kernel is <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-building.html" title="Building and Installing a Custom Kernel">Chapter 9</a> of the FreeBSD Handbook, it should be your main guide through the process.</p>
+
+<!-- more -->
+
+
+<p>First cd to <code>arch/conf</code>, where arch is the architecture of your machine &mdash; use <code>uname -a</code> to display it, we will assume i386 same as the manual. Afterwards copy the <code>GENERIC</code> configuration file to a new folder under <code>/root/kernels/</code> name it in capital letters (traditions) we will use <code>MYKERNEL</code> here, you could use whatever you prefer. The manual says it&rsquo;s better to name it after the hostname of your machine if you are working with multiple machines.</p>
+
+<p>&mdash; Tip:
+When finished customizing the kernel configuration file, save a backup copy to a location outside of <code>/usr/src</code>. Do not edit <code>GENERIC</code> directly.</p>
+
+<p>Alternately, keep the kernel configuration file elsewhere and create a symbolic link to the file in <code>i386</code>.
+``` bash</p>
+
+<h1>cd /usr/src/sys/i386/conf</h1>
+
+<h1>mkdir /root/kernels</h1>
+
+<h1>cp GENERIC /root/kernels/MYKERNEL</h1>
+
+<h1>ln -s /root/kernels/MYKERNEL</h1>
+
+<p><code>``
+Next start editing your new configuration file</code>MYKERNEL`. You are advised to check the <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-config.html" title="Kernel Configuration">Handbook</a> section.</p>
+
+<p>One of the first things to edit is the ident argument, change it to your custom kernel name, in our case <code>MYKERNEL</code>.
+<code>
+ident MYKERNEL
+</code>
+When I first built my custom kernel it was for the purpose of optimizing a server for testing <code>IPFW</code> and other firewall functionality, I also removed all the unnecessary jargon and anything I don&rsquo;t need for the purpose of this server.</p>
+
+<p>You need to spend some time with the configuration file options and the kernel config in the handbook to get a better sense of each configuration.</p>
+
+<p>After you are done, save the file and head over to the next step.</p>
+
+<p>&mdash; <strong>Note</strong>: It is required to have the full FreeBSD source tree installed to build the kernel.
+Now you are ready to compile your new kernel, using <code>buildkernel</code> and specifying your kernel name <code>MYKERNEL</code>.</p>
+
+<p>Next install your new kernel using <code>installkernel</code> command.</p>
+
+<p><em>The above steps are gonna take some hours depending on your hardware config so be prepared, with your favorite book.</em></p>
+
+<p>Please make sure you have a recent backup before installing the new kernel.
+``` bash</p>
+
+<h1>cd /usr/src</h1>
+
+<h1>make buildkernel KERNCONF=MYKERNEL</h1>
+
+<h1>make installkernel KERNCONF=MYKERNEL</h1>
+
+<p><code>
+That's it. Now you just need to restart and experience the power!
+</code> bash</p>
+
+<h1>reboot</h1>
+
+<p><code>``
+The new kernel will be copied to</code>/boot/kernel<code>as</code>/boot/kernel/kernel<code>and the old kernel will be moved to</code>/boot/kernel.old/kernel`. Now, shutdown the system and reboot into the new kernel. If something goes wrong, refer to the troubleshooting instructions and the section which explains how to recover when the new kernel does not boot.</p>
+
+<p>A great advice by <a href="http://www.rhyous.com/2012/05/09/how-to-build-and-install-a-custom-kernel-on-freebsd/" title="Custom Kernel">Rhyous</a> worth mentioning is to check your disk space before compiling your new kernel.</p>
+
+<p>If you just want to edit one module, in my case I was working on IPFW, you probably don&rsquo;t have to recompile the whole system, in order to compile faster you can edit the /etc/make.conf file</p>
+
+<p>The <code>MODULES_OVERRIDE</code> variable will only build the specified modules instead of building everything.
+<code>
+MODULES_OVERRIDE = net netinet/ipfw
+</code>
+More information is available from the handbook.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[File System Index Node (Inode)]]></title>
+    <link href="http://draco003.github.io/blog/2013/06/30/file-system-index-node-inode/"/>
+    <updated>2013-06-30T05:43:29+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/06/30/file-system-index-node-inode</id>
+    <content type="html"><![CDATA[<p>The inode is a unique identifier in Linux/UNIX filesystems, it&rsquo;s also known as the index number.</p>
+
+<p>Definition on <a href="http://www.cyberciti.biz/tips/understanding-unixlinux-filesystem-inodes.html" title="nixCraft inode article">nixCraft</a>:
+An inode is a data structure on a traditional Unix-style file system such as <code>UFS</code> or <code>ext3</code>. An inode stores basic information about a regular file, directory, or other file system object.</p>
+
+<p>We can display the inode of a specific file name or a list of files in a directory by using the <code>ls</code> command.</p>
+
+<p>Here is a typical output of files inode inside a directory,
+<code>bash
+$ ls -li
+total 13
+10376896 -rw-r--r--  1 draco  draco   200 Feb 11 19:01 test.c
+10376892 -rw-r--r--  1 draco  draco   480 Feb 11 19:11 test.hex
+10376897 -rw-r--r--  1 draco  draco   181 Feb 11 19:10 test
+</code>
+The numbers are the inodes of the respictive files.</p>
+
+<p>One of the most common use of inodes is handling filenames with special characters or unicode like UTF-8, you cannot handle such filenames directly from the terminal, so you need to access it using its inode number.</p>
+
+<p>My answer on StackOverflow to a related problem: <a href="http://stackoverflow.com/a/16216044/1708778">http://stackoverflow.com/a/16216044/1708778</a></p>
+
+<p>&mdash; Further reading: <a href="http://www.onlamp.com/pub/a/bsd/2001/03/07/freebsd_basics.html" title="Understanding Filesystem Inodes">Understanding Filesystem Inodes</a> (<em>BSD DEVCENTER ONLamp.com</em>)</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Mathematics | Draco's Weblog]]></title>
+  <link href="http://draco003.github.io/blog/categories/mathematics/atom.xml" rel="self"/>
+  <link href="http://draco003.github.io/"/>
+  <updated>2014-04-25T03:04:02+03:00</updated>
+  <id>http://draco003.github.io/</id>
+  <author>
+    <name><![CDATA[Draco]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Area of Irregular Polygons]]></title>
+    <link href="http://draco003.github.io/blog/2013/04/05/area-of-irregular-polygons/"/>
+    <updated>2013-04-05T03:21:51+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/04/05/area-of-irregular-polygons</id>
+    <content type="html"><![CDATA[<p>Ever wondered how the surface area of an irregular polygon is calculated?</p>
+
+<p>Perhaps you wanted to determine the area enclosed by specific coordinates on a Google Map or <a href="http://www.openstreetmap.org/" title="Open Street Map">OSM</a>?</p>
+
+<p>We are going to write a python script using <a href="https://en.wikipedia.org/wiki/Green%27s_theorem" title="Wikipedia on Green's Theorem">Green&rsquo;s Theorem</a> to calculate the area of an irregular polygon using coordinates of the points.</p>
+
+<p>Green&rsquo;s theorem is used in area surveying to determine the area and centroid of plane figures by integrating over the perimeter. The area can be computed using this formula:</p>
+
+<p><img class="center" src="/downloads/images/green2.gif"></p>
+
+<p>where C is a closed contour or curve that defines the boundary of the region D, and A is the area of the region D.</p>
+
+<p>We will discuss Green&rsquo;s Theorem in a later article, but for now we are focusing on this specific application of Area.</p>
+
+<!-- more -->
+
+
+<p>This is a python script based on the formula above:
+``` python</p>
+
+<h1>!/usr/bin/python -tt</h1>
+
+<p>def area(p):</p>
+
+<pre><code>return 0.5 * abs(sum(x0*y1 - x1*y0
+                     for ((x0, y0), (x1, y1)) in segments(p)))
+</code></pre>
+
+<p>def segments(p):</p>
+
+<pre><code>return zip(p, p[1:] + [p[0]])
+</code></pre>
+
+<p>```</p>
+
+<p>Breaking the code:</p>
+
+<ol>
+<li>Obtain the coordinates of the vertices.</li>
+<li>Create an array of the x and y coordinates of each vertex in a counterclockwise order &ndash; Repeat the first pair at the end of the array (list).</li>
+<li>Multiply the x coordinate of each vertex by the y coordinate of the next vertex, then add the results and call it S1.</li>
+<li>Multiply the y coordinate of each vertex by the x coordinate of the next vertex, then add the results again and call it S2.</li>
+<li>Now Subtract S1 from S2 to get 2A = S2 &ndash; S1.</li>
+<li>Now divide the difference by 2 to get the Area (A).</li>
+</ol>
+
+
+<p>&mdash; <em>Citations</em>:
+How to Calculate the Area of a Polygon: <a href="http://www.wikihow.com/Calculate-the-Area-of-a-Polygon" title="WikiHow Irregular Polygons">WikiHow</a>
+Green&rsquo;s Theorem: <a href="http://mathworld.wolfram.com/GreensTheorem.html" title="Wolfram Green's Theorem">Wolfram</a>
+Python code: <a href="http://stackoverflow.com/a/451482" title="Stack Overflow Area of 2D polygon">Stack Overflow</a></p>
+]]></content>
+  </entry>
+  
+</feed>

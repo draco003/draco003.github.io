@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>FreeBSD: Build and Install a Custom Kernel - Draco's Weblog</title>
+  <meta name="author" content="Draco">
+
+  
+  <meta name="description" content="Building and Installing a Custom FreeBSD Kernel">
+  <meta name="keywords" content="custom kernel, build kernel, compile kernel, build custom modules kernel, freebsd kernel, freebsd IPFW custom kernel">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Draco's Weblog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<meta name="google-site-verification" content="ExsIr3HoKKtTQNsb_pfQyyqNxPIWX3I-dY_PKXyfMNk" />
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Draco's Weblog</a></h1>
+  
+    <h2>My Personal Programming & Electronics Journal.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:draco003.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">FreeBSD: Build and Install a Custom Kernel</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-02T22:33:00+03:00" pubdate data-updated="true">Jul 2<span>nd</span>, 2013</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>FreeBSD is a very powerful OS and you can even achieve higher performance by modifying the Kernel and using the modules you need.</p>
+
+<p>Before playing with the kernel you need to have the full FreeBSD source tree installed. The source tree lives in <code>/usr/src</code></p>
+
+<p>If you don&rsquo;t have it then you can get it using subversion <code>svn</code>, follow this guide: <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/svn.html" title="A.5. Using Subversion">Section A.5, “Using Subversion”</a>.</p>
+
+<p>A great resource for building a custom kernel is <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-building.html" title="Building and Installing a Custom Kernel">Chapter 9</a> of the FreeBSD Handbook, it should be your main guide through the process.</p>
+
+<!-- more -->
+
+
+<p>First cd to <code>arch/conf</code>, where arch is the architecture of your machine &mdash; use <code>uname -a</code> to display it, we will assume i386 same as the manual. Afterwards copy the <code>GENERIC</code> configuration file to a new folder under <code>/root/kernels/</code> name it in capital letters (traditions) we will use <code>MYKERNEL</code> here, you could use whatever you prefer. The manual says it&rsquo;s better to name it after the hostname of your machine if you are working with multiple machines.</p>
+
+<p>&mdash; Tip:
+When finished customizing the kernel configuration file, save a backup copy to a location outside of <code>/usr/src</code>. Do not edit <code>GENERIC</code> directly.</p>
+
+<p>Alternately, keep the kernel configuration file elsewhere and create a symbolic link to the file in <code>i386</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src/sys/i386/conf</span>
+</span><span class='line'><span class="c"># mkdir /root/kernels</span>
+</span><span class='line'><span class="c"># cp GENERIC /root/kernels/MYKERNEL</span>
+</span><span class='line'><span class="c"># ln -s /root/kernels/MYKERNEL</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next start editing your new configuration file <code>MYKERNEL</code>. You are advised to check the <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-config.html" title="Kernel Configuration">Handbook</a> section.</p>
+
+<p>One of the first things to edit is the ident argument, change it to your custom kernel name, in our case <code>MYKERNEL</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ident MYKERNEL
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When I first built my custom kernel it was for the purpose of optimizing a server for testing <code>IPFW</code> and other firewall functionality, I also removed all the unnecessary jargon and anything I don&rsquo;t need for the purpose of this server.</p>
+
+<p>You need to spend some time with the configuration file options and the kernel config in the handbook to get a better sense of each configuration.</p>
+
+<p>After you are done, save the file and head over to the next step.</p>
+
+<p>&mdash; <strong>Note</strong>: It is required to have the full FreeBSD source tree installed to build the kernel.
+Now you are ready to compile your new kernel, using <code>buildkernel</code> and specifying your kernel name <code>MYKERNEL</code>.</p>
+
+<p>Next install your new kernel using <code>installkernel</code> command.</p>
+
+<p><em>The above steps are gonna take some hours depending on your hardware config so be prepared, with your favorite book.</em></p>
+
+<p>Please make sure you have a recent backup before installing the new kernel.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cd /usr/src</span>
+</span><span class='line'><span class="c"># make buildkernel KERNCONF=MYKERNEL</span>
+</span><span class='line'><span class="c"># make installkernel KERNCONF=MYKERNEL</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it. Now you just need to restart and experience the power!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reboot</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The new kernel will be copied to <code>/boot/kernel</code> as <code>/boot/kernel/kernel</code> and the old kernel will be moved to <code>/boot/kernel.old/kernel</code>. Now, shutdown the system and reboot into the new kernel. If something goes wrong, refer to the troubleshooting instructions and the section which explains how to recover when the new kernel does not boot.</p>
+
+<p>A great advice by <a href="http://www.rhyous.com/2012/05/09/how-to-build-and-install-a-custom-kernel-on-freebsd/" title="Custom Kernel">Rhyous</a> worth mentioning is to check your disk space before compiling your new kernel.</p>
+
+<p>If you just want to edit one module, in my case I was working on IPFW, you probably don&rsquo;t have to recompile the whole system, in order to compile faster you can edit the /etc/make.conf file</p>
+
+<p>The <code>MODULES_OVERRIDE</code> variable will only build the specified modules instead of building everything.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">MODULES_OVERRIDE</span> <span class="o">=</span> net netinet/ipfw
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>More information is available from the handbook.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Draco</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-02T22:33:00+03:00" pubdate data-updated="true">Jul 2<span>nd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/freebsd/'>FreeBSD</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/" data-via="draco003" data-counturl="http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/30/file-system-index-node-inode/" title="Previous Post: File System Index Node (inode)">&laquo; File System Index Node (inode)</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/07/03/https-proxy-test-in-c/" title="Next Post: HTTPS Proxy Test in C">HTTPS Proxy Test in C &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/draco003">@draco003</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'draco003',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Draco -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'draco003';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/';
+        var disqus_url = 'http://draco003.github.io/blog/2013/07/02/freebsd-build-and-install-a-custom-kernel/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

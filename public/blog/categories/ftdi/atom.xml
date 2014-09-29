@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: FTDI, | Draco's Weblog]]></title>
+  <link href="http://draco003.github.io/blog/categories/ftdi/atom.xml" rel="self"/>
+  <link href="http://draco003.github.io/"/>
+  <updated>2014-04-25T03:04:02+03:00</updated>
+  <id>http://draco003.github.io/</id>
+  <author>
+    <name><![CDATA[Draco]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[FTDI Bitbang Mode]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode/"/>
+    <updated>2013-03-28T17:43:03+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/28/ftdi-bitbang-mode</id>
+    <content type="html"><![CDATA[<p>I&rsquo;d like to give a simple introduction on using FTDI chips in bitbang mode based on this post on <a href="http://hackaday.com/2009/09/22/introduction-to-ftdi-bitbang-mode/">Hack a Day</a>.</p>
+
+<p>For the hardware we will be using the <a href="http://www.sparkfun.com/products/718" title="Product Page">&ldquo;Breakout Board for FT232RL USB to Serial&rdquo;</a> from Sparkfun, of course you can use any flavor of FTDI ICs.</p>
+
+<!-- more -->
+
+
+<p>Also we will need to get the libftdi devel/libftdi if you don&rsquo;t have it already.
+``` bash</p>
+
+<h1>cd /usr/ports/devel/libftdi</h1>
+
+<h1>make install clean</h1>
+
+<p>```</p>
+
+<p>The documentation is very helpful when working with <code>libftdi</code> API in C++: <a href="http://www.intra2net.com/en/developer/libftdi/documentation/group__libftdi.html" title="Library Documentation">libftdi docs</a>.</p>
+
+<p>When you connect the <code>FT232R</code> breakout board via USB, you should be able to see your device as a virtual serial port in my case: <code>/dev/cuaU0</code> and it was identified as a ugen1.2 device.
+<code>bash
+% dmesg | tail
+ugen1.2: &lt; FTDI &gt; at usbus1
+uftdi0: &lt; FT232R USB UART &gt; on usbus1
+</code></p>
+
+<p>Next let&rsquo;s try the LED blinker example by <a href="http://hackaday.com/author/philburgess/" title="Phil's Profile">Phil</a> at Hack a Day.</p>
+
+<p>I made some changes to the C++ code to be compatible with the latest <code>libftdi 0.20</code></p>
+
+<p>We will need an LED and a 330 Ohm resistor. Connect the Anode of LED (long lead +ve) to CTS pin on FTDI breakout, and the Cathode (short lead -ve) to the resistor, and the other lead of the resistor will be connected to GND.</p>
+
+<p>Put the following code in a file named <code>hello_ftdi.c</code>
+``` c hello_ftdi.c
+/<em> hello_ftdi.c: flash LED connected between CTS and GND.
+This example uses the libftdi API.
+Minimal error checking; written for brevity, not durability. </em>/</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;ftdi.h></h1>
+
+<h1>define LED 0x08 /<em> CTS </em>/</h1>
+
+<p>int main()
+{
+unsigned char c = 0;
+struct ftdi_context ftdic;</p>
+
+<p>/<em> Initialize context for subsequent function calls </em>/
+ftdi_init(&amp;ftdic);</p>
+
+<p>/<em> Open FTDI device based on FT232R vendor &amp; product IDs </em>/
+if(ftdi_usb_open(&amp;ftdic, 0x0403, 0x6001) &lt; 0) {
+puts(&ldquo;Can&rsquo;t open device&rdquo;);
+return 1;
+}</p>
+
+<p>/<em> Enable bitbang mode with a single output line </em>/
+ftdi_set_bitmode(&amp;ftdic, LED, BITMODE_BITBANG);</p>
+
+<p>/<em> Endless loop: invert LED state, write output, pause 1 second </em>/
+for(;;) {
+c ^= LED;
+ftdi_write_data(&amp;ftdic, &amp;c, 1);
+sleep(1);
+}
+}
+```</p>
+
+<p>To compile the above code we use the following command:
+``` bash</p>
+
+<h1>gcc -I/usr/local/include/ -L/usr/local/lib/ -o blink hello_ftdi.c -lftdi</h1>
+
+<p><code>
+This will generate an executable named `hello`, run it
+</code> bash
+% ./hello
+```</p>
+
+<p>You should see the LED blinking on and off with a period of 1 second.</p>
+
+<p>We might need this pin mapping for the FTDI pins in future programming:
+<code>c
+/*
+* bitbang I/O pin mappings
+*
+* #define PIN_TXD 0x01
+* #define PIN_RXD 0x02
+* #define PIN_RTS 0x04
+* #define PIN_CTS 0x08
+* #define PIN_DTR 0x10
+* #define PIN_DSR 0x20
+* #define PIN_DCD 0x40
+* #define PIN_RI 0x80
+*/
+</code>
+For now you can have a look on Phil&rsquo;s post on Hack a Day he explains the code pretty well, the code above is modified and works well with libftdi 0.20, also I&rsquo;ll post here the PWM LED chaser code in that other article it&rsquo;s written using D2XX API instead. So I&rsquo;ll post below a modified version to work with libftdi API.</p>
+
+<p>The hardware setup includes 4 LEDs and 4 330 Ohm resistors, I happened to use an LED bar that I had laying around.
+``` c pwmchase.c
+/<em> pwmchase.c: 8-bit PWM on 4 LEDs using FTDI cable or breakout.
+This example uses the libftdi API.
+Minimal error checking; written for brevity, not durability. </em>/</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;string.h></h1>
+
+<h1>include &lt;math.h></h1>
+
+<h1>include &lt;ftdi.h></h1>
+
+<h1>define LED1 0x08 /<em> CTS </em>/</h1>
+
+<h1>define LED2 0x01 /<em> TXD </em>/</h1>
+
+<h1>define LED3 0x02 /<em> RXD </em>/</h1>
+
+<h1>define LED4 0x14 /<em> RTS + DTR </em>/</h1>
+
+<p>int main()
+{
+int i,n;
+unsigned char data[255 * 256];
+struct ftdi_context ftdic;</p>
+
+<p>/<em> Generate data for a single PWM &lsquo;throb&rsquo; cycle </em>/
+memset(data, 0, sizeof(data));
+for(i=1; i&lt;128; i++) {
+/<em> Apply gamma correction to PWM brightness </em>/
+n = (int)(pow((double)i / 127.0, 2.5) * 255.0);
+memset(&amp;data[i * 255], LED1, n); /<em> Ramp up </em>/
+memset(&amp;data[(256 &ndash; i) * 255], LED1, n); /<em> Ramp down </em>/
+}</p>
+
+<p>/<em> Copy data from first LED to others, offset as appropriate </em>/
+n = sizeof(data) / 4;
+for(i=0; i&lt;sizeof(data); i++)
+{
+if(data[i] &amp; LED1) {
+data[(i + n ) % sizeof(data)] |= LED2;
+data[(i + n * 2) % sizeof(data)] |= LED3;
+data[(i + n * 3) % sizeof(data)] |= LED4;
+}
+}</p>
+
+<p>/<em> Initialize context for subsequent function calls </em>/
+ftdi_init(&amp;ftdic);</p>
+
+<p>/<em> Open FTDI device based on FT232R vendor &amp; product IDs </em>/
+if(ftdi_usb_open(&amp;ftdic, 0x0403, 0x6001) &lt; 0) {
+puts(&ldquo;Can&rsquo;t open device&rdquo;);
+return 1;
+}</p>
+
+<p>/<em> Initialize, open device, set bitbang mode w/5 outputs </em>/</p>
+
+<p>ftdi_set_bitmode(&amp;ftdic, LED1 | LED2 | LED3 | LED4, BITMODE_BITBANG);
+ftdi_set_baudrate(&amp;ftdic, 9600); /<em> Actually 9600 * 16 </em>/</p>
+
+<p>/<em> Endless loop: dump precomputed PWM data to the device </em>/
+for(;;) ftdi_write_data(&amp;ftdic, data, sizeof(data));
+}
+```</p>
+
+<p>To compile run:
+``` bash</p>
+
+<h1>gcc -I/usr/local/include/ -L/usr/local/lib/ -o pwm pwmchase.c -lftdi -lm</h1>
+
+<p>```</p>
+
+<p>then to run:
+<code>bash
+% ./pwm
+</code></p>
+
+<p>You should now see the 4 LEDs chasing each other with the PWM (Pulse Width Modulation) effect.</p>
+
+<p>I&rsquo;m currently working on connecting a 20x4 LCD display, and will have it show some data. Will keep you posted.</p>
+
+<p>I hope this would be of any help to you, Have fun!</p>
+]]></content>
+  </entry>
+  
+</feed>

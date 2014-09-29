@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Draco's Weblog</title>
+  <meta name="author" content="Draco">
+
+  
+  <meta name="description" content="Formatting a USB stick or external drive into MS-DOS FAT32 file system. We will be using gpart utility as well as newfs_msdos Follow these steps, run &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://draco003.github.io/blog/page/3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Draco's Weblog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<meta name="google-site-verification" content="ExsIr3HoKKtTQNsb_pfQyyqNxPIWX3I-dY_PKXyfMNk" />
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Draco's Weblog</a></h1>
+  
+    <h2>My Personal Programming & Electronics Journal.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:draco003.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/27/format-disk-to-ms-dos-fat/">Format Disk to MS-DOS FAT</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-27T06:00:45+02:00" pubdate data-updated="true">Mar 27<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/03/27/format-disk-to-ms-dos-fat/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/03/27/format-disk-to-ms-dos-fat/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Formatting a USB stick or external drive into <code>MS-DOS FAT32</code> file system.</p>
+
+<p>We will be using gpart utility as well as <code>newfs_msdos</code></p>
+
+<p>Follow these steps, run as root.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dd if=/dev/zero of=/dev/da0 bs=1k count=1</span>
+</span><span class='line'><span class="c"># gpart create -s mbr da0</span>
+</span><span class='line'><span class="c"># gpart add -t &quot;\!11&quot; da0</span>
+</span><span class='line'><span class="c"># newfs_msdos -F32 /dev/da0s1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Line 1: We will first clear the partition info using <code>dd</code> command,
+make sure you use the right device name: <code>/dev/da0</code> in my case.</p>
+
+<p>Line 2: Create an <code>MBR</code> (Master Boot Record) on that device.
+Line 3: Add a new mbr partition, we use <code>!11</code> type for mbr (with proper escaping for BASH),</p>
+
+<p>when I used the mbr type <code>gpart</code> didn&rsquo;t recognize it.</p>
+
+<p>Line 4: Constructs a new MS-DOS FAT file system of type 32.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/25/convert-bin-slash-cue-image-to-iso-slash-cdr/">Convert BIN/CUE Image to ISO/CDR</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-25T20:14:17+02:00" pubdate data-updated="true">Mar 25<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/03/25/convert-bin-slash-cue-image-to-iso-slash-cdr/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/03/25/convert-bin-slash-cue-image-to-iso-slash-cdr/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you are familiar with torrents, you might have downloaded a <code>bin/cue</code> cd image before.</p>
+
+<p>The bin/cue CD format is used by some non-Unix cd-writing software, but it&rsquo;s not supported by most other programs. <code>image.bin</code> is the raw cd image, and <code>image.cue</code> is the track index file containing track types and offsets.</p>
+
+<p>On FreeBSD I&rsquo;ll be using the <code>bchunk</code> command. Read more on the man page <code>bchunk(1)</code></p>
+
+<p>You can install bchunk from ports, first update your ports tree and then build it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># portsnap fetch update</span>
+</span><span class='line'><span class="c"># cd /usr/ports/sysutils/bchunk</span>
+</span><span class='line'><span class="c"># make install clean</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then just run bchunk.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># bchunk -v image.bin image.cue basename</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>basename</code> is used for the beginning part of the created track files.</p>
+
+<p>This will create a new iso and cdr files which can be mounted to a <code>vnode</code> memory disk.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/25/mount-iso-file-format/">Mount ISO File Format</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-25T04:03:03+02:00" pubdate data-updated="true">Mar 25<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/03/25/mount-iso-file-format/#disqus_thread"
+             data-disqus-identifier="http://draco003.github.io/blog/2013/03/25/mount-iso-file-format/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sometimes I get files in the <code>iso</code> format, perhaps ripped of a CD or something and I want to use the files without burning it to a CD.</p>
+
+<p>This is the way I do it on FreeBSD.</p>
+
+<p>First open a terminal, then type the following commands,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># mdconfig -a -t vnode -f path/to/file.iso -u 1</span>
+</span><span class='line'><span class="c"># mount -v -t cd9660 /dev/md1 /media/iso</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where <code>path/to/file.iso</code> is the real path to your file, and <code>/media/iso</code> is where you mount the iso.</p>
+
+<p>You must be root to run these commands. This basically attaches a <code>vnode</code> type memroy disk from that iso file and creates an md device with the number specified in the <code>-u</code> option.</p>
+
+<p>After that I copy the mounted data else where, and then un mount the vnode memory disk created in the above steps.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># umount /media/iso</span>
+</span><span class='line'><span class="c"># mdconfig -d -u 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all folks!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/2/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/07/codeigniter-pagination-integrated-with-bootstrap/">CodeIgniter Pagination Integrated With Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/14/codeigniter-sessions-using-postgresql/">CodeIgniter Sessions Using PostgreSQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/27/maxmind-geoip-using-python-api/">Maxmind GeoIP Using Python API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/26/convert-bin-slash-toc-image-to-bin-slash-cue/">Convert BIN/TOC Image to BIN/CUE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/03/https-proxy-test-in-c/">HTTPS Proxy Test in C</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/draco003">@draco003</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'draco003',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Draco -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'draco003';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

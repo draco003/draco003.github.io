@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Networking | Draco's Weblog]]></title>
+  <link href="http://draco003.github.io/blog/categories/networking/atom.xml" rel="self"/>
+  <link href="http://draco003.github.io/"/>
+  <updated>2014-04-25T03:04:02+03:00</updated>
+  <id>http://draco003.github.io/</id>
+  <author>
+    <name><![CDATA[Draco]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[HTTPS Proxy Test in C]]></title>
+    <link href="http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c/"/>
+    <updated>2013-07-03T21:53:23+03:00</updated>
+    <id>http://draco003.github.io/blog/2013/07/03/https-proxy-test-in-c</id>
+    <content type="html"><![CDATA[<p>I wanted to share my first contribution to Gist. It&rsquo;s an HTTPS proxy tester using cURL library in C.</p>
+
+<p>&mdash; Forked from <a href="https://gist.github.com/mj/5102778" title="Original Gist by mj">mj</a>.</p>
+
+<!-- more -->
+
+
+<script type="text/javascript" src="https://gist.github.com/draco003/5448626.js"></script>
+
+
+<p>To compile under FreeBSD using GCC:
+<code>bash
+$ gcc -Wall -L/usr/local/lib/ -I/usr/local/include/ -lcurl https-proxy-test.c -o https-proxy-test
+</code></p>
+
+<p>Usage: <code>https-proxy-test &lt;ip:port&gt;</code>
+<code>bash
+$ ./https-proxy-test 123.123.123.123:8080
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OpenSSH Server Security]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/31/openssh-server-security/"/>
+    <updated>2013-03-31T03:30:01+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/31/openssh-server-security</id>
+    <content type="html"><![CDATA[<p>Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers.</p>
+
+<p><code>SSH</code> is typically used to log into a remote machine and execute commands, it also supports tunneling and we can transfer files using the scp protocol.</p>
+
+<p>Change the default port on which SSH listens for incoming connections.</p>
+
+<p>I&rsquo;ll be using port number 22644 for this example, so I&rsquo;ll add the following lines to the <code>/etc/rc.conf</code> file
+<code>
+sshd_enable="YES"
+sshd_flags="-p 22644"
+</code></p>
+
+<p>Disable root user login, and use SSH Protocol 2.</p>
+
+<p>Edit and uncomment (as necessary) the following lines in the <code>/etc/ssh/sshd_config</code> file
+<code>
+Port 22644
+Protocol 2
+PermitRootLogin no
+</code></p>
+
+<p>Now we have to restart the OpenSSH server,
+``` bash</p>
+
+<h1>/etc/rc.d/sshd restart</h1>
+
+<p>```</p>
+
+<p>You might also want to activate SSH Public Key login, check this post.</p>
+]]></content>
+  </entry>
+  
+</feed>

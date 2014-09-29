@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Security | Draco's Weblog]]></title>
+  <link href="http://draco003.github.io/blog/categories/security/atom.xml" rel="self"/>
+  <link href="http://draco003.github.io/"/>
+  <updated>2014-04-25T03:04:02+03:00</updated>
+  <id>http://draco003.github.io/</id>
+  <author>
+    <name><![CDATA[Draco]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[OpenSSL Multiple Vulnerabilities]]></title>
+    <link href="http://draco003.github.io/blog/2013/04/06/openssl-multiple-vulnerabilities/"/>
+    <updated>2013-04-06T20:00:56+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/04/06/openssl-multiple-vulnerabilities</id>
+    <content type="html"><![CDATA[<p>FreeBSD includes software from the OpenSSL project. A flaw in the OpenSSL handling of OCSP response verification could be exploited,to cause a denial of service attack.</p>
+
+<p>The original topic from Security Advisory can be checked <a href="http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc" title="Security Advisory Link">here</a>.</p>
+
+<p>It explains the problem and how to fix the source code of your current installation.</p>
+
+<p>I used the second solution which is &ldquo;To update your vulnerable system via a source code patch:&rdquo;
+a) Download the relevant patch from the location below, and verify the
+detached PGP signature using your PGP utility.
+``` bash
+[FreeBSD 8.3 and 9.0]</p>
+
+<h1>fetch <a href="http://security.FreeBSD.org/patches/SA-13:03/openssl.patch">http://security.FreeBSD.org/patches/SA-13:03/openssl.patch</a></h1>
+
+<h1>fetch <a href="http://security.FreeBSD.org/patches/SA-13:03/openssl.patch.asc">http://security.FreeBSD.org/patches/SA-13:03/openssl.patch.asc</a></h1>
+
+<h1>gpg &mdash;verify openssl.patch.asc</h1>
+
+<p>[FreeBSD 9.1]</p>
+
+<h1>fetch <a href="http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch">http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch</a></h1>
+
+<h1>fetch <a href="http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch.asc">http://security.FreeBSD.org/patches/SA-13:03/openssl-9.1.patch.asc</a></h1>
+
+<h1>gpg &mdash;verify openssl-9.1.patch.asc</h1>
+
+<p><code>``
+I'm using</code>RELEASE-9.0` at the time of this writing, so I used the first method.</p>
+
+<p>If you don&rsquo;t have <code>PGP</code> installed yet, you will have to get <code>GNUPG</code> using the following commands,
+``` bash</p>
+
+<h1>portmaster security/gnupg</h1>
+
+<p>[not using portmaster?]</p>
+
+<h1>cd /usr/ports/security/gnupg</h1>
+
+<h1>make install clean</h1>
+
+<p>```</p>
+
+<p>You also need to download the Security Officer PGP Key and import it.
+``` bash</p>
+
+<h1>fetch <a href="http://www.freebsd.org/security/so_public_key.asc">http://www.freebsd.org/security/so_public_key.asc</a></h1>
+
+<h1>gpg &mdash;import so_public_key.asc</h1>
+
+<p>```</p>
+
+<p>Now you have the Security Advisor publick key installed, you can go ahead and verify the downloaded patch using the gpg &mdash;verify command,</p>
+
+<p>You made it that far, now apply the patch (in my case it was located in my home directory),
+b) Execute the following commands as root:</p>
+
+<p>``` bash</p>
+
+<h1>cd /usr/src</h1>
+
+<h1>patch &lt; /home/draco/openssl.patch</h1>
+
+<p>```</p>
+
+<p>Then <code>buildworld</code> and <code>installworld</code> (for more info consult the <a href="http://www.freebsd.org/handbook/makeworld.html" title="Make Wolrd FreeBSD Handbook">Handbook</a>)</p>
+
+<p>This will take a while, so go pray or read a book  =)
+``` bash</p>
+
+<h1>cd /usr/src</h1>
+
+<h1>make buildworld</h1>
+
+<h1>make installworld</h1>
+
+<p><code>
+Now you need to restart your machine,
+</code> bash</p>
+
+<h1>shutdown -r now</h1>
+
+<p>```
+That&rsquo;s all folks.</p>
+
+<p>P.S Consult the original topic: <a href="http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc">http://www.freebsd.org/security/advisories/FreeBSD-SA-13:03.openssl.asc</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Generate SSH Keys]]></title>
+    <link href="http://draco003.github.io/blog/2013/04/04/generate-ssh-keys/"/>
+    <updated>2013-04-04T06:33:12+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/04/04/generate-ssh-keys</id>
+    <content type="html"><![CDATA[<p>SSH keys enable you to access a remote machine using ssh protocol using your public/private ssh keys combination.</p>
+
+<p>You can choose not to apply a password, and thus access the machine directly, or you can add more security to the keys and apply a password.</p>
+
+<p>The following command generates a pair of ssh authentication keys for your machine
+<code>bash
+% ssh-keygen -t rsa
+</code></p>
+
+<p>The default keys will be created under your home directory in the <code>.ssh</code> directory, id_rsa and id_rsa.pub</p>
+
+<p><code>id_rsa</code>: This is your private key, keep it safe and never share it with anyone. It should not be readable by anyone.</p>
+
+<p><code>id_rsa.pub</code>: This is your public key, you share it with the server or service you want to authenticate against.</p>
+
+<p>You will also need to apply the following permissions to the keys and the .ssh directory,
+<code>bash
+% chmod 700 ~/.ssh
+% chmod 600 ~/.ssh/id_rsa
+</code></p>
+
+<p>To add your keys to a remote server just copy the <code>id_rsa.pub</code> file to that server and add it to the <code>authorized_keys</code> file,</p>
+
+<p>also don&rsquo;t forget to fix the permissions.
+<code>bash
+[on remote server]
+% cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+% chmod 700 ~/.ssh
+</code></p>
+
+<p>It&rsquo;s always a good practice to add a password to your keys.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OpenSSH Server Security]]></title>
+    <link href="http://draco003.github.io/blog/2013/03/31/openssh-server-security/"/>
+    <updated>2013-03-31T03:30:01+02:00</updated>
+    <id>http://draco003.github.io/blog/2013/03/31/openssh-server-security</id>
+    <content type="html"><![CDATA[<p>Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers.</p>
+
+<p><code>SSH</code> is typically used to log into a remote machine and execute commands, it also supports tunneling and we can transfer files using the scp protocol.</p>
+
+<p>Change the default port on which SSH listens for incoming connections.</p>
+
+<p>I&rsquo;ll be using port number 22644 for this example, so I&rsquo;ll add the following lines to the <code>/etc/rc.conf</code> file
+<code>
+sshd_enable="YES"
+sshd_flags="-p 22644"
+</code></p>
+
+<p>Disable root user login, and use SSH Protocol 2.</p>
+
+<p>Edit and uncomment (as necessary) the following lines in the <code>/etc/ssh/sshd_config</code> file
+<code>
+Port 22644
+Protocol 2
+PermitRootLogin no
+</code></p>
+
+<p>Now we have to restart the OpenSSH server,
+``` bash</p>
+
+<h1>/etc/rc.d/sshd restart</h1>
+
+<p>```</p>
+
+<p>You might also want to activate SSH Public Key login, check this post.</p>
+]]></content>
+  </entry>
+  
+</feed>
